@@ -1,0 +1,820 @@
+1. Bundlers :
+     A bundler is a tool that takes all your JavaScript code, along with any other assets like CSS or images
+     and combines them into a single file (or a few files) that can be served to the browser.
+     It basically bundles your code, so that it can be pushed to production. Eg. Webpack,veet,parcel.
+
+2. How to Install Bundlers in our project:
+     npm install -D "bundlersname" eg. npm install -D parcel.
+     D stands for devDependencies.
+
+3. Caret in Version(^) :
+     If put infornt of the dependency version, it will automatically update the minor version of the dependency.
+      eg. "parcel": "^2.10.3"
+
+4. Tilde in version(~) :
+     If put infornt of the dependency version, it will automatically update the major version of the dependency.
+      Not a very good practice.
+      eg. "parcel": "~2.10.3"
+
+5. package.json :
+     It keeps all the configuration of our projects. eg. package version,liscence,git url etc.
+
+6. package-lock.json :
+     It keeps the exact version that is being installed. 
+     package.json can have caret or tilde but lock.json will keep the exact version.
+
+7. node-modules :
+     It contains all the codes that npm has fetched of all the dependencies in our project. 
+     It is basically a database/bundles of dependencies. Every package has its own dependencies.
+
+8. transitive dependencties :
+     eg. parcel is my dependency but dependencies that parcel depends on.
+
+9. Build your code using parcel : npx parcel index.html    eg. npx bundler-name src-name
+
+10. Install react and reactDOM as a package instead of injecting a cdn:
+     npm i react and npm i react-dom
+
+11. Build in production command :
+     npx parcel build index.html   
+     (remove the main from package.json as it will give error in production because we give the entry point while running. so it conflicts.)
+
+12. How to add browserslist:
+     Add browserslist in package.json.
+
+13. How to use script to run the project:
+    Create a script in package.json for dev and prod. eg. "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+
+14. JSX or ReactElement: 
+    -   JSX is javaScript file to create ReactElement which is more developer friendly. It is convention where we merge js file with html like syntax.
+    -   JSX is not HTML, it's html like syntax. JSX is not necessary to create React rather it is more developer friendly.
+    -   JSX (transpiled before it reaches the JS engine) - PARCEL - BABEL
+    -   JSX => React.createElement => ReactElement - JS Object => rendered => HTMLElement
+    -   JSX attribute has to be camel case.
+    -   Multiple line JSX can be written inside ().
+    -   eg. const heading = <h1 id="heading">This is a ReactElement🪱</h1> instead of const heading = React.createElement("h1",{id:"heading"},"This is a ReactElement🪱!");
+    -   We can render ReactElement by just root.render(ReactElement);
+    -   JSX takes care of cross site scripting. 
+
+15. Babel:
+    -   Babel is a javaScript compiler. It can be added as a node module in our package.
+    -   Babel is a transpiler that convert one peice of code to another peice of code.
+    -   Babel is the one who converts JSX to JS.
+
+16. Two types of Components:
+    Functional Components
+    Class based Components
+
+    Functional Component: 
+    -   It is just a normal javascript function that returns a peice of JSX code or ReactElement.
+    -   Name of the component has to be in capital.
+    -   Any javascript function with capital name and an arraow function ia a component.
+    -   If there is ony one line of JSX element then return is not necessary.
+    -   When rerurn one single ReactElement, curly brackets is used.{}
+    -   eg. const HeadingComponent = () =>{
+            return <h1>This is a React Functional Component</h1>
+            };
+    -   When we rerurn a div type ReactElement, we use small brackets.
+    -   eg. const HeadingComponent = () =>(
+            <div id="container">
+            <h1 id="heading"> This is a Functional Component returning div type react element.</h1>
+            </div>
+            );
+    -   We can render compnent by brackets inside render. eg. root.render(<HeadingComponent/>)
+
+17. Component Composition :
+    -   It is nothing but calling one component inside another component.
+    -   eg. const HeadingComponent2 = ()=>(
+            <div id="container2">
+            {/* {HeadingComponent()}  or <HeadingComponent/> or <HeadingComponent></HeadingComponent> 
+            we can call HeadingComponent inside curly braces as well because at the end of the day component is also a normal javascript function and
+            any javascript function can be called inside curly function inside JSX */}
+            <HeadingComponent />
+            <h1 id="heading">We are adding one componet into another component/ Component Composition</h1>
+            </div>
+
+18. Dist Folder :
+     -    Production Build Output:
+          -    When you create a production build of your React application using tools like
+               Create React App, Webpack, or other bundlers, the optimized and minified versions of your JavaScript, CSS,
+               and other assets are generated and placed in the dist folder.
+
+     -    Ready for Deployment: 
+          -    The dist folder contains files that are optimized for deployment to a web server or hosting service.
+               These optimized files have minimized file sizes, concatenated code, and other optimizations for faster loading and
+               better performance in a production environment.
+
+
+Why don't we use normal JS variable instead of state variable?
+    -   In state variable, whenever the state of any variable is changed, react re-renders the whole component with the updated value(
+        which is found by diff algorithm/also know as reconciliation) and only updates the modified value.
+    -   But in normal JS variable, even if the value of the variabe is changed, it will not render in the UI as react does not know 
+        if there is any change. eg. Login button
+    
+
+
+Optional Chaining :
+    -   ?.: This is the optional chaining operator. 
+        It checks if the property preceding it (address, contact) exists and is not null or undefined
+        before attempting to access the subsequent property (street, email).
+    -   If the property or method before the ?. is null or undefined, the expression will short-circuit 
+        and return undefined immediately without throwing an error. 
+    -   This helps prevent the "Cannot read property 'x' of undefined" error.
+    
+    -   eg. resData?.info.areaName.
+    -   We are using optional chaining and write like this 
+        const {cloudinaryImageId, name, cuisines, avgRating, areaName} = resData?.info; 
+        to reduce the messed code and minimize the repetition of code as well.
+        Now we can directly use the values with just name below.
+        
+
+
+    <RestaurantCard resData = {restCardsList[0]}/>  {/* passing props to the component */}
+    <RestaurantCard resData = {restCardsList[1]}/> 
+    <RestaurantCard resData = {restCardsList[2]}/> 
+    <RestaurantCard resData = {restCardsList[3]}/> 
+    This is not a good practice to create component one by one and map the restraurants with its index value.
+    Instead we wil create components based on list count and map dynamically by using list.map(component) javascript function below.
+    Always provide a key when looping through a lit.
+    -   eg. {topRatedRestaurantList.map(restaurant=>(<RestaurantCard key={restaurant.info.id} resData={restaurant}/>))}; 
+
+    not using keys (not acceptable) <<< usning index as key <<< unique id as key (best practice)
+
+
+
+    We can't use multiple default exports, instead we use named exports.
+    eg. export const CDN_URL = "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/";
+
+    But we import named exports  with curly brackets{}.
+    eg. import { CDN_URL } from "../utils/constants";
+
+
+React Hooks:
+
+    React Hooks are functions that allow functional components in React to use state, lifecycle methods, context,
+    and other React features without writing a class.
+    They were introduced in React version 16.8 to address various challenges
+    and provide a cleaner way to manage stateful logic in functional components.
+
+    useState():
+        -   Used for state manangement, manages component level states.
+        -   In order to use useState(), we have to import it from react first as named imoort inside curly brackets. 
+        -   eg. import { useState } from "react";
+        -   It is a super powerful state variable.
+        -   It takes some default value.
+        -   eg. const [topRatedRestaurantList,setTopRatedRestaurantList] = useState([restCardsList]);     
+            here restCardsList is a default value for topRatedRestaurantList.
+        -   It takes an additional set function for the state manipulation. eg. setTopRatedRestaurantList
+        -   how to set the listValue.
+            eg. 
+                <button className="filter-btn" onClick={()=>{
+                    const filteredList=restCardsList.filter(res => res.info.avgRating>4);
+                    setTopRatedRestaurantList(filteredList);
+                }}>4+ Rated Restaurants</button>
+        -   Whenever a state variable updates, react re-renders the component.
+        -    state variable is meant ot be created inside a functional component at the higher level.
+            eg. never create a state variable outside of the functional component.
+                never create a state variable inside a conditional statement. i.e. if else.
+                never create a state variable inside a loop.
+                never create a state variable inside a function even though it will not give error. It's not a good practice.
+
+
+    useEffect():
+        -   manages the lifecycle of the component. replaces componentDidMount,componenDidUpdate,componentWillMount.
+        -   useEffect is a normal JS function.
+        -   It is called after the component has been rendered.
+        -   It is very useful for better UX.
+        -   It can be imported in the same way as useState like named import from react. eg. import {useEffect} from "react";
+        -   eg.     useEffect(() => {
+                    fetchData();
+                    },[]);
+        -   dependency array is not necessary in useEffect.
+        -   case 1: if no dependency array, useEffect will be called on every component render.
+        -   case 2: if empty dependency array, useEffect will one be called once i.e initially on the page load.
+        -   case 3: if dependency array is not empty, useEffect will be called every time there is a change in the dependency array state.
+    
+    useContext(): 
+        -   Allows functional components to consume data from React Context API.
+            It provides access to the value of the nearest Context provider.
+        -   We create a context file and create a new context by createContext.
+            eg. 
+                const UserContext = createContext({
+                    loggedInUser : "Default User"
+                });
+        -   We use it by importing useContext from react.
+            eg. 
+                import UserContext from "../utils/UserContext";
+                const {loggedInUser} = useContext(UserContext); -- this is how we use it in functional component.
+        -   This solves the issue with props drilling.
+        -   Modify the context data using Context.Provider component.
+            eg.
+                <UserContext.Provider value={{loggedInUser:userName}}>
+                    <div className="app">
+                        <Header />
+                        <Outlet />
+                        <Footer />
+                    </div>
+                </UserContext.Provider>
+        
+        -   We can modify state variable of header using context from body by passing state variable inside Context.Provider component.
+            eg. Passing state variable <UserContext.Provider value={{loggedInUser:userName, setUserName}}>
+            eg. Receiving in body const {loggedInUser,setUserName} = useContext(UserContext);
+            eg. modifying value from input box
+                <input className="border to-black" value={loggedInUser} onChange={(e)=>{setUserName(e.target.value)}}></input>
+        
+
+
+    useReducer(): 
+        -   Alternative to useState for managing more complex state logic.
+            It uses a reducer function and returns the current state and a dispatch function.
+    
+    useSelector():
+        -   It comes from react-redux library.
+            eg. import {useSelector} from "react-redux";
+        -   This selector helps us to identify what portionof the store we want to read.
+            eg. const cartItems = useSelector((store)=> store.cart.items);
+
+
+    useCallback():
+        -   Memoizes functions to prevent unnecessary re-renders of components that rely on these functions.
+
+    useMemo():
+        -   Memoizes the result of a function to improve performance by caching expensive computations.
+
+    useRef():
+        -   Returns a mutable ref object that persists across renders and can hold a reference to a DOM element or any mutable value.
+
+    useImperativeHandle():
+        -   Customizes the instance value that is exposed when using ref with forwardRef.
+
+    useLayoutEffect():
+        -   Similar to useEffect, but it runs synchronously after all DOM mutations.
+            It's often used for code that needs to run after the DOM is updated.
+
+    useDebugValue():
+        -   Helps display a label for custom hooks in React DevTools.
+    
+    useRouteError():
+        -   It can be imported as named import from react-router-dom. eg. import {useRouteError} from "react-router-dom";
+        -   It is developer friendly and can be used to show error in the UI.
+            eg. const Error = () =>{
+                const err = useRouteError();
+                return (
+                <div className="error">
+                <h1>{err.status} {err.statusText}</h1>
+                <h2>{err.data}</h2>
+                </div>
+                );
+            }  
+
+    useParams(); 
+        -   This hook is use to get or pass the id.
+        -   This can be used by importing it from react-router-dom.
+        -   eg. import { useParams } from "react-router-dom";
+        -   How to store value inside params. eg. const {resId} = useParams();
+
+Custom Hooks :
+    -   Custom hooks is nothing but a normal javascript function that we create with use keyword in the beginning , so react react me identify it as hook.
+    -   It is imported in the same way.
+        eg. import useRestaurantMenu from "../utils/useRestaurantMenu";
+    -   We create this hooks to seperate the logic of fetching and diplaying the data, leading in Single Responsibility Principle.
+    -   eg. const resInfo = useRestaurantMenu(resId);  -- useRestaurantMenu is a cutom hook here.
+
+
+Reconciliation Algorithm (React Fiber) : 
+    -   Whenever something changes in the UI or in state variable, it is called reconciliation.
+    -   It is the new way of finding the diff and updating the DOM.
+
+
+Virtual Dom : 
+    -   Virtual DOM is a representation of an Actual DOM or / a javascript object or / nested div tags.
+        eg. <Body /> component => 
+        <div className="body">
+            <div className="filter">
+                <button className="filter-btn" onClick={()=>{
+                    const filteredList=restCardsList.filter(res => res.info.avgRating>4);
+                    setTopRatedRestaurantList(filteredList);
+                }}>4+ Rated Restaurants</button>
+            </div>
+            <div className="search">Search</div>
+            <div className="res-container">
+                {topRatedRestaurantList.map(restaurant=>(<RestaurantCard key={restaurant.info.id} resData={restaurant}/>))};   {/**This is a config driven UI as the card is now dependent on data. */}
+            </div>
+        </div>
+            
+
+Diff Algorithm :
+    -   It finds the difference between two virtual DOM and then updates the actual DOM. i.e. react becomes faster.
+    -   Virtual DOM is nothing but a javascript object.
+        eg. Earlier there were 21 restaurants in our Virtual DOM, after filter 15 restaurants in Virtual DOM.
+            So, diff algorith will find the difference between both the Virtual DOM/ object and then update the actual DOM.
+
+
+Monolith Architecture vs Microservice Architecture:
+    
+    Microservice Architecture :
+        Decomposed Services:
+            Applications are divided into smaller services, each responsible for a specific business capability or function.
+            These services are independently deployable and scalable.
+        Independent Deployability:
+            Each service can be developed, deployed, updated, and scaled independently without affecting the entire application.
+        Service Boundaries:
+            Services have well-defined boundaries and communicate with each other through APIs, often using lightweight protocols like REST, gRPC, or messaging systems.
+        Technology Diversity:
+            Different services within a microservices architecture can use different technologies, languages, databases, or frameworks, depending on their specific requirements.
+        Resilience and Fault Isolation:
+            Services are designed for resilience, and failures in one service don't necessarily impact the entire system.
+            Isolating failures helps in maintaining overall system stability.
+        Scalability:
+            Microservices can be independently scaled based on the specific needs of each service, allowing efficient resource allocation.
+        Continuous Deployment:
+            The architecture supports continuous integration and continuous deployment (CI/CD), enabling rapid and frequent updates to individual services.
+        Ease of Maintenance:
+            Smaller, more focused services are typically easier to understand, maintain, and modify compared to monolithic applications.
+
+    Monolith Architecture :
+        Single Unit:
+            The entire application, including its components (frontend, backend, database), is tightly integrated into a single codebase and deployed as a single unit.
+        Tightly Coupled:
+            Components within the application are closely interconnected, often sharing the same codebase, libraries, and resources.
+        Technology Stack:
+            A monolithic application generally uses a single technology stack, including a specific programming language, framework, and database system.
+        Scalability:
+            Scaling a monolithic application involves scaling the entire application rather than scaling specific components independently.
+        Development and Deployment:
+            Development, testing, and deployment are often centralized and managed as a single application lifecycle.
+
+
+Two ways to render your UI?
+    1st Approach :
+        -   Page Load => Make an Api Call => Render the UI
+    
+    2nd Appoach :
+        -   Page Loads => Render the UI => Make an API call => Re-render UI with data
+        -   This appoach gives better UX and it is the best practice.
+
+
+Shimmer UI :
+    -   It is kind of using dummy/blank/fake UI untill the data has been loaded.
+    -   It gives better UX.
+    -   Instead of using Loading icon , we can use Shimmer UI to show untill the data is rendered.
+
+
+Routing :
+    -   We can install react router dom to handle our routing in react.
+        eg. npm install react-router-dom   , it will add the react-router-dom in package.json
+    -   createBrowserRouter is used to add all the routes path and it takes a list of array as routes.
+    -   it is provided by react-router-dom and can be used by importing it.
+        eg. import {createBrowserRouter} from "react-router-dom";
+    -   How to define the path inside createBrowserRouter:
+            -   eg.
+                const router= createBrowserRouter([
+                    {
+                        path:"/",
+                        element:<AppLayout />,
+                        errorElement:<Error />
+                    },
+                    {
+                        path:"/about",
+                        element:<About />
+                    },
+                    {
+                        path:"/contact",
+                        element:<Contact />,
+                    }
+                ]);
+
+    -   path is used to provide the route url.
+    -   element is used to render the component on that path.
+    -   errorElement is used to render the error component if any path is wrong.
+    
+    -   how to render this routes:
+            -   ReactProvider is used to render this routes in our root.
+            -   it can be imported by react-router-dom along with createBrowserRouter.
+                eg. import {createBrowserRouter,RouterProvider} from "react-router-dom";
+            -   Used as. root.render(<RouterProvider router={routes} />); instead of root.render(<ApplAyout />);
+
+
+    -   Children Routes:
+        -   The main concept of children out is to keep our header and footer intact and render the body based on the routes.
+        -   Children routes can be created with children element inside createBrowserRouter.
+                eg. children:[
+                {
+                    path:"/",
+                    element:<Body />
+                },
+                {
+                    path:"/about",
+                    element:<About />
+                },
+                {
+                    path:"/contact",
+                    element:<Contact />,
+                }
+            ],
+
+        -   Now we can use Outlet component to render body of any routes.
+        -   import {<Outlet />} from "react-router-dom";
+            eg.     const AppLayout =()=>{
+                    return (
+                        <div className="app">
+                        <Header />
+                        <Outlet />
+                    </div>
+                    )
+                    };
+
+    
+    -   Never use an anchor tag for routing any another component. As it will reload the whole page.
+        Instead use link component which can be imported from react-router-dom. It only refreshes the component.
+        Epitome of single page application.
+        eg. import {Link} from "react-router-dom";
+            <li><Link to="/contact">Contact Us</Link></li>
+
+    -   Client Side Routing :
+        -   This is client side routing.
+        -   All the components have been loaded at the first time.
+        -   In order to route to different pages, like about us, we are not making any network calls. We are only loading the components.
+
+    -   Server Side Routing :
+        -   When we make a call to the server and then we fetch that page and we show it in the UI.
+        -   eg. if we have multiple html pages and we make a call to that routes to load that page.
+
+
+
+    Dynamic Routing :
+    -   where you pass the routes with some id or other parameter i.e. not fixed.
+    -   eg. path: /restaurants/:resId   , 
+    -   we use colon(:) to pass dynamic data to our routes. eg. resId is dynamic.
+
+
+Class Based Component :
+    eg. 
+        import React,{Component} from "react";
+
+        class ClassComponent extends Component{
+            contructor(props){
+                super(props);
+            }
+
+            render(){
+                return (
+                    <div>
+                        <h2>Developer Name : {this.props.name}</h2>
+                        <h3>Profession : {this.props.profession}</h3>
+                        <h4>Hobbies : {this.props.hobbies}</h4>
+                    </div>
+                )
+            }
+        }
+
+        export default ClassComponent;
+
+Dynamic Bundling/ Code Splitting/ Chuncking/ Lazy Loading/ On demand loading/ Dynamic import :
+    -   This is very useful for optimization purpose for large scale application.
+    -   We divide the components into small- small bundles.
+    -   We don't import all the components at the start, we import it on demand when used.
+    -   This proces makes our js file small and takes less time to load.
+    -   We import it using lazy function provided by react and import inside it to pass the path of that component.
+        eg. const Grocery = lazy(()=> import("./components/Grocery"));
+            import React,{lazy,Suspense} from "react";
+    -   As react is very fast, it give error before the js bundle is loaded to the browser,
+        we use Suspense component provided by react to avoid the error.
+    -   We an provide fallback inside Sunspense , as what to show until our js file is loaded to the browser.
+        eg. {
+                path:"/grocery",
+                element:(<Suspense fallback={<h1>Loading...</h1>}><Grocery /></Suspense>)
+            }
+
+
+Higher Order Components:
+    -   It is just a normal js function which takes a component as a argument and returns a enhanced or modified version of that component.
+    -   It does not modify the original component code.
+    -   It has to be named export/import.
+    -   eg. export const VegRestaurantCard = (RestaurantCard) =>{
+                return (props) =>{
+                    return(
+                        <div>
+                            <p className="absolute p-1 m-1 bg-black rounded-lg text-white">PureVeg</p>
+                            <RestaurantCard {...props}/>
+                        </div>
+                    )
+                }
+            }
+    -   here RestaurantCard is a component and in props we are passing the same data as original RestaurantCard component.
+
+
+Controlled & Uncontrolled Component :
+
+    UnControlled Component :
+        -   Component which manages its own state and does not depend on another component.
+        -   Here accordion header has its own state of show items with onclick event.
+            showItems is state variable which is changing on click of accordion header.
+            State variable is in the same component.
+            eg. const [showItems,setShowItems] = useState(false);
+            
+                {/** Accordion Header */}
+                <div className="flex justify-between cursor-pointer" onClick={handleClick}>
+                    <span className="font-bold text-lg">{data?.title} ({data.itemCards.length})</span>
+                    <span>⬇️</span>
+                </div>
+                {/** Accordion Body */}
+                { showItems && <ItemList items={data.itemCards}/>}
+
+    
+    Controlled Component :
+        -   Where the behaviour of one component is controlled by another component or by parent component.
+        -   This is also a exapmle of Lifting the state up.
+        
+Lifting the State Up :
+    -   Child component updates the state variable of parent component.
+    -   eg. accordion.
+    -   Here parent is send a state variable as a function to the child.
+    -   And this function will be called from the child on click and change the value of a state.
+
+                {category.map((category,index)=>(
+                    <RestaurantCategoryCard data={category?.card?.card}
+                    showItems={index === showIndex ? true :false}
+                    setShowIndex={()=>setShowIndex(index)}/>
+
+
+Prop Drilling :
+    -   It is way of passing props from parent to child to its child.
+        eg. A -> B -> C
+    _   This is not a effective way of passing props.
+        eg. If we have to pass prop from A to C.
+        It does not make sense to pass it from A -> B and B -> C if B does not have any use of that data.
+
+Redux :
+-   Redux is not manadatory to create a react application.
+-   Redux is state management library where we store all our states data.
+-   Redux store can be very big and will be hard to manage, to achieve this we have slices inside redux tool kit.
+-   RTK says either you mutate the state or return a new state.
+    eg. return {items:[]} -- this is returning a new state or state.items.length=0; -- this is a mutated state.
+-   Redux Slice :
+    -   Slices are used to seperate the logical state. eg. Cart Slice, User slice , theme slice etc.
+
+-   We cannot directly modify slice of our redux store.
+    -   Way to modify slice in our redux store:
+    -   eg. Add Button Click ---> Dispatches an Action ---> Action will call a reducer fn --> Then reducer fn will modify our slice of our redux store.
+
+-   Way to read data from slice in our redux store :
+    -   We will use a selector and Selector will give us the data.
+    -   This using of selector phenomenon is called Subscribing to the store.
+    -   In orther way , our component is subscribed to our store means
+        our component is using selector to read the data from slice of our redux store.
+
+
+Redux ToolKit(RTK) Vs react-redux library :
+    redux toolkit contains all the api's or rtkQuery provided by redux.
+    Inorder to use those in our appliaction we use Provided which is provided by react-redux. 
+
+
+Redux ToolKit :
+    -   Create Store in Redux & Use it in App:
+            -   configureStore api provided by redux that is used to create store. eg. const appStore = configureStore({});
+            -   we provide our store at the root level. and we pass StoreName inside a store.
+                eg. import { Provider } from "react-redux";
+                    <Provider store={appStore}>
+                        <UserContext.Provider value={{loggedInUser:userName, setUserName}}>
+                            <div className="app">
+                                <Header />
+                                <Outlet />
+                                <Footer />
+                            </div>
+                        </UserContext.Provider>
+                    </Provider>
+
+    -   Create Slice inside our store :
+        -   createSlice api provided by redux to create a slice in store. eg. const cartSlice = createSlice({});
+        -   createSlice takes 4 things inside i.e. name of the car, initialState as items of array, action and a reducer fn.
+            eg. const cartSlice = createSlice({
+                    name: "cart",
+                    initialState: {
+                        items: [],
+                    },
+                    reducers :{
+                        addItem : (state,action) =>{
+                            state.items.push(action.payload);
+                        },
+                        removeItem : (state,action) =>{
+                            state.items.pop();
+                        },
+                        clearCart : (state,action) =>{
+                            state.items.length = 0;
+                        }
+                    },
+                });
+                export const {addItem,removeItem,clearCart} = cartSlice.actions;  this is how we export an action.
+                export default cartSlice.reducer;  // this is how we export a reducer.
+
+        -   Reducer function take 2 arguments i.e. state and action
+            eg. addItems :  (state,action) =>{
+                                state.items.push(action.payload);
+                            },
+        -   addItems is the name of the reducer function.
+    
+    -   Add slices inside our App store :
+        -   We add slices as a reducer in our store.
+        -   eg. import cartReducer from "./cartSlice";
+                const appStore = configureStore({
+                    reducer : {
+                    cart : cartReducer,
+                    },
+                });
+
+    -   Read data from store :
+        -   Selector is used to read the data from store.
+        -   useSelector is a hook provided by react-redux.
+            eg. import {useSelector} from "raect-redux";
+                const cartItems = useSelector((store)=> store.cart.Items);  // reading the data from store
+    
+    -   Dispatch an action :
+        -   dispatch is a hook provided by reac-redux as useDispatch.
+            eg. import {useDispatch} from "reacct-redux";
+                const dispatch = useDispatch();
+        -   How to dispatch an action to call my reducer function
+            eg.  const handleAddItem = (item) =>{
+                    // dispatch an action
+                    dispatch(addItem(item.card?.info?.name));  // it is calling my reducer addItem reducer function
+                }
+
+Reducer :
+    -   App store will have one reducer and a bunch of small reducer for each slice. i.e we write reducer without s.
+    -   In our Slice, we have reducers which have multipler reducer function. i.e we write reducers with s.
+    -   In our slice we export only one reducer.
+
+Impure Function :
+    -   state.items.push(action.payload);
+
+Immer Library :
+    -   In older version of Redux, we cannot mutate the state, instead we create a new state, mutate it and then return it.
+        eg.  const newState = [...state];
+             newState.items.push(action.payload);
+             return newState;
+    -   Redux behind the scene uses immer library to create a new state.
+    -   In newer version in redux tool kit , we have to mutate the state . eg. state.items.push;
+    -   This library is used to finding the difference 
+        between original state and the mutated state and gives back the new state which is immutable.
+
+How to console log in Redux:
+    -   We can do console.log inside redux by using current.
+    -   import {current} from "@reduxjs/toolkit";
+    -   console.log(current(state));
+
+RTK Query : https://redux-toolkit.js.org/tutorials/rtk-query
+
+Testing :
+
+    Unit Testing : When we test each component one by one.
+    Integration Testing : It involves when we write test cases which has multiple components involved and so many actions are going on inside.
+        eg. search
+
+    React Testing Library is built on top of DOM Testing library. It is used to write our test cases inside react.
+    React Testing Library use Jest behing the scenes.
+    Jest is javascript testing framework.
+
+    Setting Up Testing in our app:
+        -   Command to install React Testing Library : npm i -D @testing-library/react
+        -   Command to install Jest : npm i -D jest
+        -   Command to install babel dependency : npm install --save-dev babel-jest @babel/core @babel/preset-env
+        -   Command to run test cases : npm test or npm run test
+        -   Command for jest configuration : npx jest --init
+        -   jsdom env :
+            -   jsdom is browser like enviroment where we run our tests. Its not a browser.
+            -   In order to run our test we need one server, since we dont have any server running , we use jsdom.
+        -   Command to install jsdom library : npm i -D jest-environment-jsdom
+        -   Install @babel/preset-react - to make JSX work in test cases  -- Command npm i -D @babel/preset-react
+        -   Include @babel/preset-react in babel config.js  like ['@babel/preset-react',{runtime:"automatic"}]  -- make it automatic
+        -   Install @testing-library/jest-dom -- command npm i -D @testing-library/jest-dom
+
+    Folder Structure for test file :
+        -   Create a folder with __tests__ and any file inside if .js or .ts will be considered as test file.
+        -   Or we can use filename.test.ts or filename.test.js or filename.spec.js or filename.spec.ts
+        -   this __ before and after the name is called dunder.
+
+    Write test Case :
+        -   test is used for writing test case. It take two arguments.
+        -   1 is the decription and other is the callback function where we will call our function or anything.
+        -   "it" and test is the same thing. "it" is just an alias for test.
+        -   for grouping of test we use describe.
+        -   Add "watch-test":"jest --watch" in package.json in order to run your test again and again manually.
+        -   Command to start your test --- npm run watch-test 
+
+        Unit Testing :
+        -   Testing one component/one unit in isolation. means testing seperate seperate component.
+        -   If you are using redux in your component, you have to provide the redux appStore using provider while rendering component.
+            eg. 
+            eg. describe("Contact Us page test cases",()=>{
+                    test("Should render my Contact Us Component",()=>{
+                        render(<Contact />)
+                    
+                        const heading = screen.getByRole("heading");
+                    
+                        //Assertion
+                        expect(heading).toBeInTheDocument();
+                    })
+                    
+                    test("Should load button inside Contact Component",()=>{
+                        render(<Contact />)
+                    
+                        const button = screen.getByRole("button");  // or const button = screen.getByText("Submit");
+                    
+                        //Assertion
+                        expect(button).toBeInTheDocument();
+                    })
+                    
+                    it("Should load input username inside Contact Component",()=>{
+                        render(<Contact />)
+                    
+                        const username = screen.getByPlaceholderText("username");  // or const message = screen.getByPlaceholderText("message");
+                    
+                        expect(username).toBeInTheDocument();
+                    })
+                    
+                    it("Should load 2 input boxes inside Contact Component",()=>{
+                        //Render
+                        render(<Contact />)
+                        // Querying
+                        const inputBoxes = screen.getAllByRole("textbox");
+                        //Assertion
+                        expect(inputBoxes.length).toBe(2); // or expect(inputBoxes.length).not.toBe(3); or many things are there.
+                    })
+                })
+        -   And for assertion we ecpect(actualValue).toBe(expectedValue)
+            eg. 
+                it("Should load 2 input boxes inside Contact Component",()=>{
+                    //Render
+                    render(<Contact />)
+                    // Querying
+                    const inputBoxes = screen.getAllByRole("textbox");
+                    //Assertion
+                    expect(inputBoxes.length).toBe(2); // or expect(inputBoxes.length).not.toBe(3); or many things are there.
+                })
+
+                test("Should load button inside Contact Component",()=>{
+                    render(<Contact />)
+
+                    const button = screen.getByRole("button");  // or const button = screen.getByText("Submit");
+
+                    //Assertion
+                    expect(button).toBeInTheDocument();
+                })
+        
+        Integration Testing :
+            -   Whenever we doing any fetch or updating state, we have wrap it inside act function.
+            -   act function comes from react-dom/test-utils
+            -   act return a promise , so we have to await it.
+            -   act is a function which take a callback function which is again a async fn and this async fn returns your render 
+                and this render will render your component.
+                eg. await act(async ()=> render(<Body />))
+            -   How to provide test id to input box or any html element : data-testid="searchInput"  -- i in id will be small and data- is manatory
+            -   If we dont have any id then we can always query by screnn.getByTestId("searchInput"); 
+
+
+        Helper Function :
+            -   These helper function is uselful when you want to do some clean after calling any test case.
+            
+            -   beforeAll(()=>{
+                    console.log("This will only be called once before calling all the test cases.")
+                });
+
+            -   beforeEach(()=>{
+                    console.log("This function will be called everytime before calling any test case.")
+                });
+
+            -   afterAll(()=>{
+                    console.log("This function will be called only once after calling all the test cases.")
+                });
+
+            -   afterEach(()=>{
+                    console.log("This function will be called everytime after calling any test case.")
+                });
+
+
+    
+
+
+            
+
+
+    
+
+
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+    

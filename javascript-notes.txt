@@ -1,0 +1,136 @@
+//  Comparators $ Equality
+
+//  == only checks if the value is equal but === checks the value and the data type.
+//   ===  equal to
+//   !== not equal to
+//   > greater than
+//   < less than
+//  >= greater than or equal to
+//  <= less than or equal to
+//  && AND
+//  || OR 
+
+Arrays :
+    -   push method push at the last item
+    -   pop method pops from the last item
+
+    As a best practice we should write script at the end in body section, in order to avoid error.
+    Because if any function is not declared then it will give error and page will jot load.
+    document.querselector can be used to select any of the specific html tags, class & id.
+
+Map filter reduce :
+    -   These functions is used to transform an array.
+
+    Map :
+        -   Map fn is used to transform an array and return a transformed array. or it is used to map each values in an array.
+        -   const arr = [1,2,3,4,5];
+            const output = arr.map(double);
+
+            function double(x){
+                return x*2;
+            }
+
+            function binary(x){
+                return x.toString(2);
+            }
+
+    Filter :
+        -   Filter fn is used to filter an array based on the condition.
+        -   const arr = [3,5,7,9];
+            const output = arr.filter(isOdd);
+
+            function isOdd(x){
+                return x%2;
+            }
+            function isEven(x){
+                return x%2==0;
+            }
+
+    Reduce :
+        -   Reduce fn takes all the values of an array and returns a single value out of them.
+        -   It takes 2 parameter. one is a function which take acc and current, and other is the initialized value of acc.
+        -   accumulator is like let count =0, or let sum =0; which will be updated or incremented ater iteraion. 
+        -   accumilator must be initialiazed 
+        -   const arr = [1,2,3,4,5];
+            const sum = arr.reduce(function(acc,curr)=>{
+                acc =acc + curr;
+                return acc;
+            },0);
+
+        -   const findMax = arr.reduce(function(max,curr)=>{
+                if(curr>max){
+                    max=curr;
+                }
+                return max;
+            },0);
+
+        -   const users=[
+            {fname:"Devesh" , lname : "kumar" , age :25},
+            {fname : "mona", lname:"kaushiki",age:26},
+            {fname:"motu", lname:"chumu", age:26},
+            ]
+            
+            //find list of full name
+            const output = users.map((x)=> x.fname +" "+ x.lanme);
+
+            // how may users are with same age eg. {25:1,26:2}
+            const output = users.reduce(function(acc,curr)=>{
+                if(acc[curr.age]){
+                    acc[curr.age] = ++ acc[curr.age];
+                }
+                else{
+                    acc[curr.age]=1;
+                }
+                return acc;
+            },{})
+
+            // first name of all people whose age is <30
+            aont output = users.filter(x=> x.age<30).map(x=> x.fname);
+
+
+Higher Order function :
+    -   A function that takes a fn as an argument and returns a fn.
+
+Infinite curing:
+
+Closure :
+
+This keyword : 
+
+Set interval :
+
+Set timeout :
+
+Debounce :
+
+Throttling :
+
+Event loop :
+
+Arrow fn vs regular fn :
+
+Optional chaining :
+
+Event Bubbling : 
+
+Spread Operator vs Rest Operator :
+
+Pure function :
+
+Merge to an array :
+
+Copy of an object :
+
+Promises :
+
+Async await :
+
+Es5 vs es6 :
+
+Create a user token :
+
+React fragment :
+
+Callback :
+
+
