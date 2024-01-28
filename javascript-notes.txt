@@ -1,14 +1,66 @@
 //  Comparators $ Equality
 
-//  == only checks if the value is equal but === checks the value and the data type.
-//   ===  equal to
-//   !== not equal to
-//   > greater than
-//   < less than
-//  >= greater than or equal to
-//  <= less than or equal to
-//  && AND
-//  || OR 
+    //  == only checks if the value is equal but === checks the value and the data type.
+    //   ===  equal to
+    //   !== not equal to
+    //   > greater than
+    //   < less than
+    //  >= greater than or equal to
+    //  <= less than or equal to
+    //  && AND
+    //  || OR 
+
+Javascript is synchronous single-threaded language.
+
+How Javascript Works :
+    -   Whwnever we execute our code, a global execution context is created inside call stack with name anonymous.
+    -   If any function is invoked, another execution context will be created with function name and will pushed into the call stack.
+        And when execution of is completed, that execution context will popped out of the global context in call stack.
+        And when all the execution is completed,global execution context will also be popped out and call stack will be empty.
+
+- Javascript has 2 phase.
+    -   1st phase is Memory Execution : In this phase javascript scans the whole code and create a memory for all variable and function.
+        Initially memory is created with undefined.
+    -   2nd phase is Code Execution : In this phase execution happens.
+
+Hoisting :
+    -   Hoisting is a phenomenon in which you can access the variables or the functions before initializing it.
+        eg1. console.log(x);
+            getName();
+            var x = 20;
+
+            function getName () {
+                console.log("Hello Javascript !");
+            }
+        Here we are accessing x and getname before initializing it.
+        Explaination : In javascript before the code execution starts, memory creating is done for all variable and fn's.
+            i.e memory for x and getName is already created.
+            Now, for x it will print undefined if called before initialization.
+            In case of getName, Output will be "Hello Javacript !" because you can access the function from anywhere in javascript
+             until unless it's initialiazed in the whole code.
+
+        eg2. var x = 20;
+            function getName () {
+                console.log("Hello Javascript !");
+            }
+            console.log(getName)
+
+            In this case, memory is already created but the fn is not invoked yet so the output will be 
+            ƒ getName () {
+            console.log("Hello Javascript !");
+            }   
+
+        eg3.console.log(getName)
+            var getName = () => {
+            console.log("Hello Javascript !");
+            } 
+            In this case getName is an arrow fn , so it will behave as a variable.
+            So during memory  creation phase undefined will be stored.
+
+        eg4. var getName = function (){
+            console.log("Hello Javascript !");
+            }
+            In this case as well, getName will behave like a variable.
 
 Arrays :
     -   push method push at the last item
