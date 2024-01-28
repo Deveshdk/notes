@@ -11,17 +11,57 @@
     //  || OR 
 
 Javascript is synchronous single-threaded language.
+Javascript is loosely typed/weakly typed language. means it does not attaches its variable to a specific data type.
+    means later the data type can be cahanged.
 
 How Javascript Works :
     -   Whwnever we execute our code, a global execution context is created inside call stack with name anonymous.
+    -   Execution context has 2 components. Memory and code.
     -   If any function is invoked, another execution context will be created with function name and will pushed into the call stack.
         And when execution of is completed, that execution context will popped out of the global context in call stack.
         And when all the execution is completed,global execution context will also be popped out and call stack will be empty.
 
-- Javascript has 2 phase.
+Javascript has 2 phase.
     -   1st phase is Memory Execution : In this phase javascript scans the whole code and create a memory for all variable and function.
         Initially memory is created with undefined.
     -   2nd phase is Code Execution : In this phase execution happens.
+
+Global space :
+    -   Javascript creates 3 thing when execution starts.
+    1. Global Execution context
+    2. Global object i.e. window
+    3. this
+    At the start "this" will have the same value as window.
+    eg. var x = 10;
+        function b(){
+            var a=5;
+        }
+        console.log(window.x);
+        console.log(x);
+        console.log(this.x);
+        
+        Output : 10,10,10 because window is in a global object, as well as this which has window in it.
+
+Undefined vs Not-defined :
+    -   Undefined is like a placeholder which is kept in a variable until in a code that variable is assigned to any value.
+        But that variable should be present.
+    -   Not defined means that variable is not present in the whole code. Means no memory creation for that variable.
+
+Scope, scope & Lexical Environment :
+    -   Lexical environment is created whenever an execution context is created.
+    -   Lexical environment is the local memory and lexical environment of its parent.
+    -   This whole chain of lexical enironment is called scope chain.
+        eg. function a(){
+                var b=10;
+                c();
+                function c(){
+                    console.log(b);
+                }
+            }
+            a();
+        Output : 10;
+                because c will be invoked, will try to log b, it will check its local memory first then if not found,
+                it will check lexical environment of its parent(i.e. a).
 
 Hoisting :
     -   Hoisting is a phenomenon in which you can access the variables or the functions before initializing it.
@@ -62,13 +102,11 @@ Hoisting :
             }
             In this case as well, getName will behave like a variable.
 
-Arrays :
-    -   push method push at the last item
-    -   pop method pops from the last item
+let vs const introduced in es6:
+    -   
 
-    As a best practice we should write script at the end in body section, in order to avoid error.
-    Because if any function is not declared then it will give error and page will jot load.
-    document.querselector can be used to select any of the specific html tags, class & id.
+
+
 
 Map filter reduce :
     -   These functions is used to transform an array.
