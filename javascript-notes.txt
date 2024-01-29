@@ -446,8 +446,34 @@ Inversion of Control :
     -   We loose control of our program because we passed that callback fn into another fn and now we have given the control of 
         that f to some other fn.And now we don't know whether that fn will ever execute our callback or not.
 
-Promises :
-    -   
+Promise :
+    -   Promise is an object that represt an eventful completion or failure of an asynchronous event.
+    -   PromiseState represents the current state of a promise.Promise has 3 state. Initially it is in pending state.
+        Pending, Fulfilled & Rejected.
+    -   Promise can only be resolved once and promise obejcts are immutable too so we can just pass it here n there in our code.
+    -   We can attach a handler/callbackfn with .then
+    -   So promise resolves our concern over Inversion of control.
+    -   eg. const GITHUB_API = "https://github.com/Deveshdk?tab=repositories";
+            const user= fetch(GITHUB_API);
+            console.log(user);
+            // now we attach a callback fn
+            user.then(function(data){
+            })
+            -   And we attach n number of callback functions to our promise using .then
+            -   This resolves our concern of callback hell using promise chaining.
+                eg. createOrder(cart)
+                    .then(function(orderId){
+                        return proceedToPayment(orderId)
+                    })
+                    .then(function(paymentInfo){
+                        return orderSummary(paymentInfo)
+                    })
+                    .then(function(paymentInfo) {
+                        returnwalletUpdate(paymentInfo)
+                    });
+    -   How to create a promise and promise chaining with example. eg. createPromise.js
+    -   Types of promise :
+        -   
 
 Function Curring :
     -   
