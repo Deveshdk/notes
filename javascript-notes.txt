@@ -102,11 +102,60 @@ Hoisting :
             }
             In this case as well, getName will behave like a variable.
 
-let vs const introduced in es6:
+let & const introduced in es6:
+Temporal Dead Zone :
+    -   let and const can be hoisted and memory is also created for let and const but its not in global space rather in script space.
     -   
 
+Block Scope :
+    -   
 
+Closure :
+    -   Function which is bind together with its lexical parent forms a closure.
+    -   Here b is bound with its local memory and variable of lexical parent. S0, it forms a closure.
+        eg1. function c(){
+                var a =10;
+                function b(){
+                    console.log(a);
+                };
+                b();
+            };
+            c();
+    -   Function remembers its lexical scope even after returned.
+    -   Here even if function b context is popped out after execution, but it still remembers its lexical scope and have memory.
+        eg2. function c(){
+                    var a =10;
+                    function b(){
+                        console.log(a);
+                    };
+                    return b;
+                };
+                var z = c();
+                console.log(z);
+                z();
+        
+        eg3.In this b will form 2 closure with c and s. Output: 10 900
+        function s(){
+                    var t=900;
+                    function c(){
+                        var a =10;
+                        function b(){
+                            console.log(a,t);
+                        };
+                        b();
+                    };
+                    c();
+                };
+                s();
 
+    Uses of Closure :
+        -   Module Design Pattern
+        -   Currying
+        -   Functions like once
+        -   memoize
+        -   maintaining state in async world
+        -   setTimeouts
+        -   Iterators
 
 Map filter reduce :
     -   These functions is used to transform an array.
@@ -177,13 +226,10 @@ Map filter reduce :
             // first name of all people whose age is <30
             aont output = users.filter(x=> x.age<30).map(x=> x.fname);
 
-
 Higher Order function :
     -   A function that takes a fn as an argument and returns a fn.
 
 Infinite curing:
-
-Closure :
 
 This keyword : 
 
