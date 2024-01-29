@@ -308,7 +308,37 @@ Functions :
         -   
 
 Callback Function :
-    -   
+    -   When you pass a function inside another fn. You give the responsibility of calling a fn to another fn to call it some other time.
+        This is callback fn.
+    -   Using callback we can do the async task in javascript which is a single threded synchronous language.
+        eg. setTimeout(function(){
+                console.log("timer");
+            },5000);
+
+            function x(y){
+                console.log("x");
+                y();
+            }
+            x(function y(){
+                console.log("y");
+            })
+    
+    -   Event Listeners :
+            eg. function attachEventListeners(){
+                    let count = 0;
+                    document.getElementById("clickMe").addEventListener("click",()=>{
+                        console.log("Button Clicked" , ++count);
+                    })
+                }
+                attachEventListeners();
+        
+        -   Garbage Collection & Remove EventListeners :
+            -   EventListenerds are heavy and take memory because it forms a closure. And even if call stack is empty,
+                program will not free up the extra memory. In order to do that we should remove our eventListeners.
+                So, all this variables that was in the closure will be garbage collected.
+
+Event loop :
+
 
 Map filter reduce :
     -   These functions is used to transform an array.
@@ -394,7 +424,6 @@ Debounce :
 
 Throttling :
 
-Event loop :
 
 Arrow fn vs regular fn :
 
