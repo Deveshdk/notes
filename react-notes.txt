@@ -107,15 +107,12 @@
                These optimized files have minimized file sizes, concatenated code, and other optimizations for faster loading and
                better performance in a production environment.
 
-
 Why don't we use normal JS variable instead of state variable?
     -   In state variable, whenever the state of any variable is changed, react re-renders the whole component with the updated value(
         which is found by diff algorithm/also know as reconciliation) and only updates the modified value.
     -   But in normal JS variable, even if the value of the variabe is changed, it will not render in the UI as react does not know 
         if there is any change. eg. Login button
     
-
-
 Optional Chaining :
     -   ?.: This is the optional chaining operator. 
         It checks if the property preceding it (address, contact) exists and is not null or undefined
@@ -150,7 +147,6 @@ Optional Chaining :
 
     But we import named exports  with curly brackets{}.
     eg. import { CDN_URL } from "../utils/constants";
-
 
 React Hooks:
 
@@ -283,11 +279,9 @@ Custom Hooks :
     -   We create this hooks to seperate the logic of fetching and diplaying the data, leading in Single Responsibility Principle.
     -   eg. const resInfo = useRestaurantMenu(resId);  -- useRestaurantMenu is a cutom hook here.
 
-
 Reconciliation Algorithm (React Fiber) : 
     -   Whenever something changes in the UI or in state variable, it is called reconciliation.
     -   It is the new way of finding the diff and updating the DOM.
-
 
 Virtual Dom : 
     -   Virtual DOM is a representation of an Actual DOM or / a javascript object or / nested div tags.
@@ -305,13 +299,11 @@ Virtual Dom :
             </div>
         </div>
             
-
 Diff Algorithm :
     -   It finds the difference between two virtual DOM and then updates the actual DOM. i.e. react becomes faster.
     -   Virtual DOM is nothing but a javascript object.
         eg. Earlier there were 21 restaurants in our Virtual DOM, after filter 15 restaurants in Virtual DOM.
             So, diff algorith will find the difference between both the Virtual DOM/ object and then update the actual DOM.
-
 
 Monolith Architecture vs Microservice Architecture:
     
@@ -347,7 +339,6 @@ Monolith Architecture vs Microservice Architecture:
         Development and Deployment:
             Development, testing, and deployment are often centralized and managed as a single application lifecycle.
 
-
 Two ways to render your UI?
     1st Approach :
         -   Page Load => Make an Api Call => Render the UI
@@ -356,12 +347,10 @@ Two ways to render your UI?
         -   Page Loads => Render the UI => Make an API call => Re-render UI with data
         -   This appoach gives better UX and it is the best practice.
 
-
 Shimmer UI :
     -   It is kind of using dummy/blank/fake UI untill the data has been loaded.
     -   It gives better UX.
     -   Instead of using Loading icon , we can use Shimmer UI to show untill the data is rendered.
-
 
 Routing :
     -   We can install react router dom to handle our routing in react.
@@ -450,7 +439,6 @@ Routing :
     -   eg. path: /restaurants/:resId   , 
     -   we use colon(:) to pass dynamic data to our routes. eg. resId is dynamic.
 
-
 Class Based Component :
     eg. 
         import React,{Component} from "react";
@@ -489,7 +477,6 @@ Dynamic Bundling/ Code Splitting/ Chuncking/ Lazy Loading/ On demand loading/ Dy
                 element:(<Suspense fallback={<h1>Loading...</h1>}><Grocery /></Suspense>)
             }
 
-
 Higher Order Components:
     -   It is just a normal js function which takes a component as a argument and returns a enhanced or modified version of that component.
     -   It does not modify the original component code.
@@ -505,7 +492,6 @@ Higher Order Components:
                 }
             }
     -   here RestaurantCard is a component and in props we are passing the same data as original RestaurantCard component.
-
 
 Controlled & Uncontrolled Component :
 
@@ -540,7 +526,6 @@ Lifting the State Up :
                     showItems={index === showIndex ? true :false}
                     setShowIndex={()=>setShowIndex(index)}/>
 
-
 Prop Drilling :
     -   It is way of passing props from parent to child to its child.
         eg. A -> B -> C
@@ -549,29 +534,27 @@ Prop Drilling :
         It does not make sense to pass it from A -> B and B -> C if B does not have any use of that data.
 
 Redux :
--   Redux is not manadatory to create a react application.
--   Redux is state management library where we store all our states data.
--   Redux store can be very big and will be hard to manage, to achieve this we have slices inside redux tool kit.
--   RTK says either you mutate the state or return a new state.
-    eg. return {items:[]} -- this is returning a new state or state.items.length=0; -- this is a mutated state.
--   Redux Slice :
-    -   Slices are used to seperate the logical state. eg. Cart Slice, User slice , theme slice etc.
+    -   Redux is not manadatory to create a react application.
+    -   Redux is state management library where we store all our states data.
+    -   Redux store can be very big and will be hard to manage, to achieve this we have slices inside redux tool kit.
+    -   RTK says either you mutate the state or return a new state.
+        eg. return {items:[]} -- this is returning a new state or state.items.length=0; -- this is a mutated state.
+    -   Redux Slice :
+        -   Slices are used to seperate the logical state. eg. Cart Slice, User slice , theme slice etc.
 
--   We cannot directly modify slice of our redux store.
-    -   Way to modify slice in our redux store:
-    -   eg. Add Button Click ---> Dispatches an Action ---> Action will call a reducer fn --> Then reducer fn will modify our slice of our redux store.
+    -   We cannot directly modify slice of our redux store.
+        -   Way to modify slice in our redux store:
+        -   eg. Add Button Click ---> Dispatches an Action ---> Action will call a reducer fn --> Then reducer fn will modify our slice of our redux store.
 
--   Way to read data from slice in our redux store :
-    -   We will use a selector and Selector will give us the data.
-    -   This using of selector phenomenon is called Subscribing to the store.
-    -   In orther way , our component is subscribed to our store means
-        our component is using selector to read the data from slice of our redux store.
-
+    -   Way to read data from slice in our redux store :
+        -   We will use a selector and Selector will give us the data.
+        -   This using of selector phenomenon is called Subscribing to the store.
+        -   In orther way , our component is subscribed to our store means
+            our component is using selector to read the data from slice of our redux store.
 
 Redux ToolKit(RTK) Vs react-redux library :
     redux toolkit contains all the api's or rtkQuery provided by redux.
     Inorder to use those in our appliaction we use Provided which is provided by react-redux. 
-
 
 Redux ToolKit :
     -   Create Store in Redux & Use it in App:

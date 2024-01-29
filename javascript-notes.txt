@@ -355,6 +355,21 @@ Trust Issue with setTimeout :
 
 Higher Order function :
     -   A function that takes a fn as an argument and returns a fn.
+        eg. const radius = [1,2,3,4,5];
+
+            const area = function (radius){
+                return 2*Math.PI*radius*radius;
+            }
+
+            const calculate = function (radius,logic){
+                const output = [];
+                for(let i=0;i<radius.length;i++){
+                    output.push(logic(radius[1]));
+                }
+                return output;
+            }
+
+            console.log(calculate(radius,area));
 
 Map filter reduce :
     -   These functions is used to transform an array.
@@ -425,34 +440,53 @@ Map filter reduce :
             // first name of all people whose age is <30
             aont output = users.filter(x=> x.age<30).map(x=> x.fname);
 
+Promises :
+    -   
+
 Function Curring :
+    -   
 
 this keyword : 
+    -   
 
 Set interval :
+    -   
 
 Debounce :
+    -   
 
 Throttling :
+    -   
 
 Arrow fn vs regular fn :
+    -   
 
 Event Bubbling : 
+    -   
 
 Spread Operator vs Rest Operator :
+    -   
 
 Pure function :
+    -   
 
 Merge to an array :
+    -   
 
 Copy of an object :
-
-Promises :
+    -   
 
 Async await :
+    -   
 
 Es5 vs es6 :
+    -   
 
 Create a user token :
+    -   
 
 React fragment :
+    -   
+
+Prototype :
+    -   
