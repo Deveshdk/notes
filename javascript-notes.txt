@@ -474,8 +474,32 @@ Promise :
     -   How to create a promise and promise chaining with example. eg. createPromise.js
 
 Promise Api :
-    -   Promise.all() :
-        -   
+    -   Promise.all() / fail fast:
+        -   It takes an array of promise. eg. promise.all = [p1,p2,p3]
+        -   It will make 3 parallel api call.
+        -   Case1 : If all gets success.
+                Output : [val1, val2, val3] and output will wait for all of them to finish(time taken).
+            Case2 :  If any of these promise get rejected.
+                Output : As soon as any of these promise gets rejected, promise.all will throw an error.(immediately)
+                        And the output will give the same error as the rejected one.
+                        It will not even wait other promise to be resolved or rejected.
+                        You cannot cancel the promise in between.
+
+    -   Promise.allSettled() :
+        -   Case 1 : If all gets resolved. 
+                Output : [val1,val2,val3] and output will wait for all of them to finish(time taken). same as promise.all in success.
+            Case 2 : If p2 get rejected. It will still wait for all promise to get settled/completed.
+                Output : [val1,err2,val3] The output will always be an array and with the same number of promises.
+    
+    -   Promise.race() :
+        -   It will give you the value of 1st settled promise. 
+        -   Output will be the result of 1st settled promise either value if resolved or error if rejected.
+    
+    -   Promise.any() :
+        -   It will wait for 1st successful/fulfilled/resolved promise.
+        -   If all the promises gets rejected, Output will be aggregated error. [err1,err2,err3]
+        -   THis is how we catch/handle an Aggregate error. eg. console.log(err.errors);
+
 
 Async/ await :
     -   Async will always returns a promise. but if you return a value, then the function will wrap that value in a promise and 
