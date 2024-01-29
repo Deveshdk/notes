@@ -107,8 +107,92 @@ Temporal Dead Zone :
     -   let and const can be hoisted and memory is also created for let and const but its not in global space rather in script space.
     -   
 
+Block {}:
+    -   Block is also kbnow as compound statement.
+    -   A block is used to combine multiple js statement in one group.
+    -   We combine mutiple statement in a block so can be used where javascript expects one statement.
+    -   Each and every block has its own lexical scope. And if follows its own scope chain pattern.
 Block Scope :
-    -   
+    -   What all variable and functions we can use inside a block.
+        eg. {
+                //compound statement
+                var a=10;
+                let b=20;
+                const c=30;
+                console.log(a);
+                console.log(b);
+                console.log(c);
+            }
+            console.log(a);
+            console.log(b);
+            console.log(c);
+    -   let and const are block scope variable and once the block has been executed ,
+        b and c will not be accessible while a was in global scope so "a" will be accessible.
+
+Shadowing :
+    -   If we have a same named variable outside the block, so it will shadow the variable.
+    -   eg1. var a= 100;
+            {
+                //compound statement
+                var a=10;
+                let b=20;
+                const c=30;
+                console.log(a);
+                console.log(b);
+                console.log(c);
+            }
+        -   output will be : 10 20 30
+
+        eg2. Output will be : 10 20 30 10  because both var a is pointing to the same global memory space.
+            so "a" inside will shadow the outside the a variable.
+            var a= 100;
+            {
+                //compound statement
+                var a=10;
+                let b=20;
+                const c=30;
+                console.log(a);
+                console.log(b);
+                console.log(c);
+            }
+            console.log(a);
+
+        eg3. Output will be : 10 20 30 100 because now both "b" has different memory space. Inside b is inside block scope.
+                outside b is in script space.
+                Same happens in the case of const.
+                And this happens in the case of function as well.
+            let b= 100;
+            {
+                //compound statement
+                var a=10;
+                let b=20;
+                const c=30;
+                console.log(a);
+                console.log(b);
+                console.log(c);
+            }
+            console.log(b);
+
+        eg4. Output will be 30 100
+            const c= 100;
+            function x(){
+                //compound statement
+                const c=30;
+                console.log(c);
+            }
+            x();
+            console.log(c);
+
+    -   Illegal Shadowing :
+        -   You cannot shadow var using let. but vice-versa is true.
+            eg. let a=100;
+                {
+                    var a=10;
+                } // Result in Syntax error.
+                var a=100;
+                {
+                    let a=10;
+                } // No error
 
 Closure :
     -   Function which is bind together with its lexical parent forms a closure.
@@ -156,6 +240,75 @@ Closure :
         -   maintaining state in async world
         -   setTimeouts
         -   Iterators
+
+setTimeout & Closure :
+    -   setTimeout takes a callback fn attaches the timer provided and stores in some other space and moves to the next line 
+        and when that time has elapsed then js will put that fn in the call stack and executes it.
+        eg. function x(){
+                var i=10;
+                setTimeout(function(){
+                    console.log(i);
+                },3000);
+                console.log("Hello");
+            }
+            x(); /// Output : Hello 10
+
+Counter with closure :
+    -   Refer to js file.
+    Disadvantage of Closure :
+        -   There could be over consumption of memory because those variable are not garbage collected till the program expires.
+        -   And if not handeled properly, there could be memory leak.
+        Garbage Collector :
+            -   It is like a program , whenever there is some unused variables which is not needed, it ceases/frees up the memory.
+                since javascript is high level programming language. It is done by the JS engine.
+
+Functions :
+    -   Main Difference between function statement and function expression is hoisting.
+    -   Function Statement :
+        -   function a(){
+                console.log(a);
+            }
+    -   Function Expression :
+        -   var b = function(){
+                console.log("b called");
+            }
+    -   Function Declaration :
+        -   Function Declaration is also Function Statement.
+    -   Anonymous Function :
+        -   Function without a name is called anonymous function.
+        -   Anonymous fn does not have its own identity.
+        -   function () {
+
+            }
+    -   Named Function Declaration :
+        -   var c = function abc(){
+                console.log("b called");
+            }
+
+            abc(); // this will result in error because this fn abc was not created in global scope.
+            It was created as a local variable.
+    -   Parameters & Arguments :
+        -    var b = function(param1, param2){    // param 1 and param2 is a parameter
+                            console.log("b called");
+                        }
+            b(1,2); // 1 and 2 is an argument
+
+    -   First Class Functions :
+        -   The ability to use functions as values and can pass a fn inside a function or return a fn from a fn is called 
+            first class function or first class citizens.
+            eg. var a = function b(param1){
+                    return (
+                        console.log(b)
+                    )
+                }
+                a(function(){
+
+                })
+    -   Arrow Functions introduced in es6:
+        -   
+
+Callback Function :
+    -   
 
 Map filter reduce :
     -   These functions is used to transform an array.
@@ -229,7 +382,7 @@ Map filter reduce :
 Higher Order function :
     -   A function that takes a fn as an argument and returns a fn.
 
-Infinite curing:
+Function Currying :
 
 This keyword : 
 
