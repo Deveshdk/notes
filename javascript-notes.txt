@@ -440,6 +440,12 @@ Map filter reduce :
             // first name of all people whose age is <30
             aont output = users.filter(x=> x.age<30).map(x=> x.fname);
 
+Callback hell or Pyramid of Doom:
+    -   One callback inside another callback inside callback or a lot of nested callback.
+Inversion of Control :
+    -   We loose control of our program because we passed that callback fn into another fn and now we have given the control of 
+        that f to some other fn.And now we don't know whether that fn will ever execute our callback or not.
+
 Promises :
     -   
 
