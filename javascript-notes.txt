@@ -349,6 +349,13 @@ Event loop :
         -   Microtask queue has higher priority.
         -   First microtask queue will execute and then callback queue will execute.
         -   All the callback fn that comes with promises or mutation server will go in microtask queue.
+
+Trust Issue with setTimeout :
+    -   
+
+Higher Order function :
+    -   A function that takes a fn as an argument and returns a fn.
+
 Map filter reduce :
     -   These functions is used to transform an array.
 
@@ -418,12 +425,9 @@ Map filter reduce :
             // first name of all people whose age is <30
             aont output = users.filter(x=> x.age<30).map(x=> x.fname);
 
-Higher Order function :
-    -   A function that takes a fn as an argument and returns a fn.
+Function Curring :
 
-Function Currying :
-
-This keyword : 
+this keyword : 
 
 Set interval :
 
