@@ -11,6 +11,8 @@
     //  || OR 
 
 Javascript is synchronous single-threaded language.
+setTimeout, timer, local storage and document.getElementById or fetch() or console.log or addEventListener these are all web api and
+these are all provided by browser in form of dom web api to the JS engine.
 Javascript is loosely typed/weakly typed language. means it does not attaches its variable to a specific data type.
     means later the data type can be cahanged.
 
@@ -338,8 +340,15 @@ Callback Function :
                 So, all this variables that was in the closure will be garbage collected.
 
 Event loop :
+    -   The purpose of event loop is to constantly monitor the call stack, microtask queue and the callback queue 
+        if there is any callback fn present and 
+        then it will create a executioj context for that callback fn and puts that callback fn inside the callstack.
+        Refer to Callback.js
 
-
+    -   Microtask Queue :
+        -   Microtask queue has higher priority.
+        -   First microtask queue will execute and then callback queue will execute.
+        -   All the callback fn that comes with promises or mutation server will go in microtask queue.
 Map filter reduce :
     -   These functions is used to transform an array.
 
@@ -418,16 +427,11 @@ This keyword :
 
 Set interval :
 
-Set timeout :
-
 Debounce :
 
 Throttling :
 
-
 Arrow fn vs regular fn :
-
-Optional chaining :
 
 Event Bubbling : 
 
@@ -448,7 +452,3 @@ Es5 vs es6 :
 Create a user token :
 
 React fragment :
-
-Callback :
-
-
