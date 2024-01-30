@@ -607,8 +607,7 @@ Es5 vs es6 :
 Create a user token :
     -   
 
-React fragment :
-    -   
+React Fragment <></> or <React.Fragment></React.Fragment>: 
 
 Prototype & prototypal inheritence :
     -   Whenever we create any javascript object, functions or variable , JS put some hidden properties and methods into an object
@@ -753,4 +752,95 @@ Spread and Rest Operator :
 Array.foreach ;
     -   Use forEach when you want to iterate over the elements of an array and perform some operation without creating a new array.
     -   Both array.map and array.foreach does not mutate the original array.
+
+Event Bubbling :
+    -   Event bubbling is a phase in the event propagation of DOM in web browser.
+        -   there are 3 phase 
+            -   Capturing phase : event starts from root of document in DOM tree untill it reaches the target element.
+            -   Targeting phase : when it reaches the target element, it triggers the event handler attached to that event.
+            -   Bubbling phase : event bubbles up the tree triggering event handler on ancestors element.
+            -   we take another attribute useCapture, if true, event trickling/capturing will happen and if undefined or
+                false, event bubbling will happen.
+            -   We can use event.stopPropagation() to stop the propagation.
+                eg. <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Event Bubbling Example</title>
+                    <style>
+                        div {
+                        padding: 20px;
+                        border: 1px solid black;
+                        margin: 5px;
+                        }
+                    </style>
+                    </head>
+                    <body>
+
+                    <div id="outer">
+                    <div id="middle">
+                        <div id="inner">Click me!</div>
+                    </div>
+                    </div>
+
+                    <script>
+                    document.getElementById('outer').addEventListener('click', function (event) {
+                        console.log('Outer div clicked');
+                    });
+
+                    document.getElementById('middle').addEventListener('click', function (event) {
+                        console.log('Middle div clicked');
+                    });
+
+                    document.getElementById('inner').addEventListener('click', function (event) {
+                        console.log('Inner div clicked');
+                    });
+                    </script>
+
+                    </body>
+                    </html>
+
+Event Delegation :
+    -   Instead of having multiple eventListeners attached to li, we just have one eventListeners attached to its parent div.
+    -   And we route to the page using window.location.href = "/"+ e.target.id;
+    -   because of event bubbling delegation is possible.
+
+Call, apply & bind :
+    -   Using call method we can do function borrowing. 
+    -   We can borrow function from other objects.
+    -   Every js object have access to this call function.
+        eg. let printAddress = function(hometown){
+                console.log("My name is" + this.name+"I live in " + this.country+"My hometown is" +this.hometown);
+            }
+            let user = {
+                name : "Devesh",
+                country :"India"
+            }
+            printAddress.call(user,"purnia")
+    
+    -   In apply method , we pass 2nd argument as arrayList.
+        eg. printAddress.apply(user,["purnia"])
+
+    -   bind will return us the function which can be invoked later.
+        eg. letPrintMyName = printAddress.bind(name,"purnia")
+            letPrintMyName();
+
+Debouncing :
+    -   It is used for better search experience. and is very performant.
+    -   Generally used for performance optimization.
+    -   it is done by limiting the rate of function call.
+    -   if the difference between two keystrokes is 300 ms then we make a call
+        eg. search, resize, buttonclick- machine gun
+
+
+
+Throttling :
+    -   Generally used for performance optimization.
+    -   it is done by limiting the rate of function call.
+    -   Only make an api call after certain interval of time.
+        eg. search, resize , buttonclick- machine gun
+
+    
+
 

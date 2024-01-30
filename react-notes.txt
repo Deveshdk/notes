@@ -777,7 +777,7 @@ Testing :
                     console.log("This function will be called everytime after calling any test case.")
                 });
 
-React Fragment <></> or <React.Fragment></React.Fragment>: 
+
     -   It is used to group multiple children without adding extra node to the DOM.
 
 Pure Component :
@@ -794,7 +794,58 @@ Pure Component :
         This can be beneficial in scenarios where a component renders frequently but
         doesn't need to update every time its parent component re-renders.
 
+React Life Cycle Methods :
+    -   Component Mounting :
+        -   Constructor is called to intialize state & binding methods.
+        -   static getDerivedStateFromProps (props,state) will be called before every render to update its state based on props.
+        -   render()  -- will return the jSX element
+        -   componentDidMount() will be called after render of component is completed.
+            -   in her we make api call to fetch data or interacting with the DOM.
 
+    -   Component Updating :
+        -   shouldComponentUpdate(nextprops,nextstate)    -- is called before rendering when new props or state are recieved.
+            -   it give you control if component should or not.
+        -   static getDerivedStateFromProps(nextProps,prevState) -- similar to mounting phase
+        -   render()
+        -   getSnapshotBeforeUpdate(prevProps,prevState) -- allows you to capture some info about the DOM
+        -   componentWillMount(prevProps,prevState,snapshot) -- perform action based on the updated props , state.
+    -   Component UnMounting :
+        -   componentWillUnmount();
+        -   happens before the component is unmpunted or destroyed.
+        -   normally used for clearing timers, or cancelling the newwork calls.
+    -   Error Handling :
+        -   static getDerivedStateFromError(error)-- used for error boundries.
+        -   componentDidCatch(error,info) -- allows you to log an error or perform any action.
+
+
+useMemo & useCallback :
+    -   The useMemo hook is used to memoize the result of a computation.
+        It helps in avoiding unnecessary re-computation of a value during re-renders.
+        It takes a function and an array of dependencies, and it returns a memoized version of the function's result.
+        eg. import React, { useMemo } from 'react';
+
+            const MyComponent = ({ prop1, prop2 }) => {
+            const memoizedValue = useMemo(() => {
+                // Expensive computation based on props
+                return prop1 + prop2;
+            }, [prop1, prop2]);
+
+            return <div>{memoizedValue}</div>;
+            };
+
+    -   useCallback hook is used to memoize a callback function.
+        It's especially useful when you need to pass a callback to a child component, and
+        you want to avoid unnecessary re-creation of the callback on each render.
+        eg. import React, { useCallback } from 'react';
+
+            const MyComponent = ({ onClick }) => {
+            const memoizedCallback = useCallback(() => {
+                // Handle click
+                onClick();
+            }, [onClick]);
+
+            return <button onClick={memoizedCallback}>Click me</button>;
+            };
 
 
 
