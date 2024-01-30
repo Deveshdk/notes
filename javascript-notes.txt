@@ -500,7 +500,6 @@ Promise Api :
         -   If all the promises gets rejected, Output will be aggregated error. [err1,err2,err3]
         -   THis is how we catch/handle an Aggregate error. eg. console.log(err.errors);
 
-
 Async/ await :
     -   Async will always returns a promise. but if you return a value, then the function will wrap that value in a promise and 
         then return a promise.
@@ -543,7 +542,31 @@ Async/ await :
         -   using try and catch.
 
 Function Curring :
-    -   
+    -   Currying is a functional programming concept where a function with multiple arguments is transformed into a series of functions,
+        each taking a single argument.
+        It allows you to create more specialized functions by partially applying arguments to a function, resulting in a new function.
+    -   Currying can be achieved by using bind and by using closure.
+    -   bind is used to make a copy of a function by passing partial arguments to the function.
+        eg. function multiply(x,y){
+                console.log( x*y);
+            }
+            let multiplyByTwo = multiply.bind(this,2);
+            multiplyByTwo(3); or we can pass it different way as well . in below
+
+            let multiplyByTwo = multiply.bind(this,2,3);
+            multiplyByTwo(); or we can pass it in another way as well. in below
+
+            let multiplyByTwo = multiply.bind(this);
+            multiplyByTwo(2,3);
+
+        eg2. Using closure
+            function multiply(x){
+                return function(y){
+                    console.log(x*y);
+                }
+            }
+            let multiplyByThree = multiply(10);
+            multiplyByThree(2);
 
 this keyword : 
     -   
@@ -587,5 +610,147 @@ Create a user token :
 React fragment :
     -   
 
-Prototype :
+Prototype & prototypal inheritence :
+    -   Whenever we create any javascript object, functions or variable , JS put some hidden properties and methods into an object
+        and attaches it to our object. 
+    -   Prototype is an object that attaches to our object with some hidden properties and methods.
     -   
+        let arr = ["dev","mona"]
+        function fun(){
+
+        }
+    -   In order to see that object that JS attaches we can simply do like f.__proto__ or arr.__proto__
+    -   arr.__proto__ is Array.Prototype => arr.__proto__.__proto__ is Object.prototye => arr.__proto__.__proto__.__proto__ is null.
+    -   fun.__proto__ is Function.prototype => fun.__proto__.__proto__ is Object.prototype ==>fun.__proto__.__proto__.__proto__ is null.
+    -   This is called prototype chain.
+
+    Protoypal inheritence :
+    -   If we attach any object1 to another object2 prototype, we will be able to use object1 properties.
+    -   In case of function if we bind any fn to Function.protype, we will be able to use that fn in all other fn using fn.__proto__.methodName
+        -   eg. let object = {
+                    name : "Devesh",
+                    age : 28,
+                    city: "Purnia",
+                    getIntro: function(){
+                        console.log("My name is"+ this.name + "And my age is " + this.age);
+                    }
+                }
+
+                let object2 = {
+                    name : "Mona",
+                    age :29
+                }
+                object2.__proto__ = object;
+                console.log("My name is "+ object2.name + " and i am from "+ object2.city);
+
+                Function.prototype.mybind = function(){
+                    console.log("I am Heman!!");
+                }
+
+                function fun(){
+                    fun.__proto__.mybind();
+                }
+
+Deep copy of an Object :
+    -   Making a deep copy of an object involves creating a new object with the same structure and values as the original object,
+        while ensuring that nested objects and arrays are also copied rather than referenced.
+
+        Approach 1 : this does not work with object that contains fn or undefined or symbols.
+            const originalObject = { a: 1, b: { c: 2 } };
+            const deepCopy = JSON.parse(JSON.stringify(originalObject));
+            console.log(deepCopy);
+        
+        Approach 2 : Using a deep copy fn.
+            function deepCopy(obj) {
+                if (obj === null || typeof obj !== 'object') {
+                    return obj;
+                }
+
+                if (Array.isArray(obj)) {
+                    return obj.map(deepCopy);
+                }
+
+                const copy = {};
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                    copy[key] = deepCopy(obj[key]);
+                    }
+                }
+
+                return copy;
+            }
+
+            const originalObject = { a: 1, b: { c: 2 } };
+            const deepCopy = deepCopy(originalObject);
+            console.log(deepCopy);
+
+        Apporach 3 : Using library lodash and .cloneDeep method
+            const _ = require('lodash');
+            const originalObject = { a: 1, b: { c: 2 } };
+            const deepCopy = _.cloneDeep(originalObject);
+            console.log(deepCopy);
+
+Copy of an Object :
+    -   We can make a copy of an object in 2 ways :
+        -   Shallow copy
+            -   Using Spread operator (...) :
+                eg. const originalObject = { a: 1, b: { c: 2 } };
+                    const shallowCopy = { ...originalObject };
+            -   Using Object.assign() :
+                eg. const originalObject = { a: 1, b: { c: 2 } };
+                    const shallowCopy = Object.assign({}, originalObject);
+        -   Deep copy using deep function or library or JSON.parse & JSON.stringify.
+
+Merge to an array ;
+    -   Concatenation (shallow copy) : It will create a new array.
+        eg. array1.concat(array2);
+    -   Spread Operator (shallow copy) : It will create new array.
+        eg. const mergedArray = [...array1, ...array2];
+    
+    -   Array.push() : Mutates the original array.
+        eg. array1.push(...array2);
+    -   Array.unshift() : Mutates the original array. It adds elements to the beginning of an array.
+        eg. array2.unshift(...array1);
+
+Pure fn vs Impure fn :
+    -   Pure fn :
+        eg. function add(a, b) {
+                return a + b;
+            }
+        -   with same imput, always same output.
+        -   Immutable data
+        -   Does not rely on external state.
+        -   Does not modify the imput parameter.
+        -   Does not modify variable outside its scope.
+        -   Behaviour is predictabe and isolated , so straightforward to test.
+        -   No hidden dependency.
+    
+    -   Impure fn :
+        eg. let total = 0;
+            function impureAdd(a) {
+            total += a;
+            return total;
+            }
+        -   relies on external state and modifies it.
+
+Spread and Rest Operator :
+    -   Both denoted by (...)
+    -   Spread Operator :
+        -   Used to make a shallow copy of an array or concatenate array.
+        -   Used to make a shallow copy of an object or to merge an object.
+    -   Rest Operator :
+        -   In function, it is used to collect the remaining arguments in an array.
+            eg. function sum(...numbers) {
+                    return numbers.reduce((acc, num) => acc + num, 0);
+                }
+                console.log(sum(1, 2, 3, 4)); // 10
+        -   Used to capture the remaining elements of an array into a new array.
+            eg. const [first, second, ...rest] = [1, 2, 3, 4, 5];
+                console.log(first); // 1
+                console.log(second); // 2
+                console.log(rest); // [3, 4, 5]
+
+Array.foreach ;
+    -   Use forEach when you want to iterate over the elements of an array and perform some operation without creating a new array.
+    -   Both array.map and array.foreach does not mutate the original array.
+

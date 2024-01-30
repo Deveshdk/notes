@@ -777,14 +777,23 @@ Testing :
                     console.log("This function will be called everytime after calling any test case.")
                 });
 
+React Fragment <></> or <React.Fragment></React.Fragment>: 
+    -   It is used to group multiple children without adding extra node to the DOM.
 
-    
+Pure Component :
+    -   It is a class component that extends React.PureComponent and render method simply returns a div with the content from the 
+        message prop.
+        eg. import React, { PureComponent } from 'react';
+            class MyPureComponent extends PureComponent {
+            render() {
+                return <div>{this.props.message}</div>;
+            }
+            }
+    -   The goal of PureComponent is to optimize rendering performance by preventing unnecessary re-renders
+        when the component's props and state haven't changed.
+        This can be beneficial in scenarios where a component renders frequently but
+        doesn't need to update every time its parent component re-renders.
 
-
-            
-
-
-    
 
 
 
