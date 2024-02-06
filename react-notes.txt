@@ -49,7 +49,8 @@
   },
 
 14. JSX or ReactElement: 
-    -   JSX is javaScript file to create ReactElement which is more developer friendly. It is convention where we merge js file with html like syntax.
+    -   JSX is javaScript file to create ReactElement which is more developer friendly.
+        It is convention where we merge js file with html like syntax.
     -   JSX is not HTML, it's html like syntax. JSX is not necessary to create React rather it is more developer friendly.
     -   JSX (transpiled before it reaches the JS engine) - PARCEL - BABEL
     -   JSX => React.createElement => ReactElement - JS Object => rendered => HTMLElement
@@ -71,7 +72,7 @@
     Functional Component: 
     -   It is just a normal javascript function that returns a peice of JSX code or ReactElement.
     -   Name of the component has to be in capital.
-    -   Any javascript function with capital name and an arraow function ia a component.
+    -   Any javascript function with capital name and an arraow function is a component.
     -   If there is ony one line of JSX element then return is not necessary.
     -   When rerurn one single ReactElement, curly brackets is used.{}
     -   eg. const HeadingComponent = () =>{
@@ -157,7 +158,7 @@ React Hooks:
 
     useState():
         -   Used for state manangement, manages component level states.
-        -   In order to use useState(), we have to import it from react first as named imoort inside curly brackets. 
+        -   In order to use useState(), we have to import it from react first as named import inside curly brackets. 
         -   eg. import { useState } from "react";
         -   It is a super powerful state variable.
         -   It takes some default value.
@@ -171,7 +172,7 @@ React Hooks:
                     setTopRatedRestaurantList(filteredList);
                 }}>4+ Rated Restaurants</button>
         -   Whenever a state variable updates, react re-renders the component.
-        -    state variable is meant ot be created inside a functional component at the higher level.
+        -   State variable is meant ot be created inside a functional component at the higher level.
             eg. never create a state variable outside of the functional component.
                 never create a state variable inside a conditional statement. i.e. if else.
                 never create a state variable inside a loop.
@@ -179,7 +180,7 @@ React Hooks:
 
 
     useEffect():
-        -   manages the lifecycle of the component. replaces componentDidMount,componenDidUpdate,componentWillMount.
+        -   manages the lifecycle of the component. replaces componentDidMount,componenDidUpdate,componentWillUnmount.
         -   useEffect is a normal JS function.
         -   It is called after the component has been rendered.
         -   It is very useful for better UX.
@@ -230,7 +231,7 @@ React Hooks:
     useSelector():
         -   It comes from react-redux library.
             eg. import {useSelector} from "react-redux";
-        -   This selector helps us to identify what portionof the store we want to read.
+        -   This selector helps us to identify what portion of the store we want to read.
             eg. const cartItems = useSelector((store)=> store.cart.items);
 
 
@@ -273,7 +274,7 @@ React Hooks:
         -   How to store value inside params. eg. const {resId} = useParams();
 
 Custom Hooks :
-    -   Custom hooks is nothing but a normal javascript function that we create with use keyword in the beginning , so react react me identify it as hook.
+    -   Custom hooks is nothing but a normal javascript function that we create with use keyword in the beginning , so react may identify it as hook.
     -   It is imported in the same way.
         eg. import useRestaurantMenu from "../utils/useRestaurantMenu";
     -   We create this hooks to seperate the logic of fetching and diplaying the data, leading in Single Responsibility Principle.
@@ -381,14 +382,14 @@ Routing :
     -   errorElement is used to render the error component if any path is wrong.
     
     -   how to render this routes:
-            -   ReactProvider is used to render this routes in our root.
+            -   RouterProvider is used to render this routes in our root.
             -   it can be imported by react-router-dom along with createBrowserRouter.
                 eg. import {createBrowserRouter,RouterProvider} from "react-router-dom";
             -   Used as. root.render(<RouterProvider router={routes} />); instead of root.render(<ApplAyout />);
 
 
     -   Children Routes:
-        -   The main concept of children out is to keep our header and footer intact and render the body based on the routes.
+        -   The main concept of children route is to keep our header and footer intact and render the body based on the routes.
         -   Children routes can be created with children element inside createBrowserRouter.
                 eg. children:[
                 {
@@ -518,7 +519,7 @@ Controlled & Uncontrolled Component :
 Lifting the State Up :
     -   Child component updates the state variable of parent component.
     -   eg. accordion.
-    -   Here parent is send a state variable as a function to the child.
+    -   Here parent is sending a state variable as a function to the child.
     -   And this function will be called from the child on click and change the value of a state.
 
                 {category.map((category,index)=>(
@@ -554,7 +555,7 @@ Redux :
 
 Redux ToolKit(RTK) Vs react-redux library :
     redux toolkit contains all the api's or rtkQuery provided by redux.
-    Inorder to use those in our appliaction we use Provided which is provided by react-redux. 
+    Inorder to use those in our appliaction we use Provider which is provided by react-redux. 
 
 Redux ToolKit :
     -   Create Store in Redux & Use it in App:

@@ -447,7 +447,7 @@ Inversion of Control :
         that f to some other fn.And now we don't know whether that fn will ever execute our callback or not.
 
 Promise :
-    -   Promise is an object that represt an eventful completion or failure of an asynchronous event.
+    -   Promise is an object that represt an eventual completion or failure of an asynchronous event.
     -   PromiseState represents the current state of a promise.Promise has 3 state. Initially it is in pending state.
         Pending, Fulfilled & Rejected.
     -   Promise can only be resolved once and promise obejcts are immutable too so we can just pass it here n there in our code.
