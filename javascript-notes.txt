@@ -373,6 +373,9 @@ Higher Order function :
 
 Map filter reduce :
     -   These functions is used to transform an array.
+    Purpose: Transform each element of an array → returns a new array of the same length.
+    Does not mutate the original array.
+    Use case: Rendering lists in React (.map() to return JSX)    .
 
     Map :
         -   Map fn is used to transform an array and return a transformed array. or it is used to map each values in an array.
@@ -440,14 +443,22 @@ Map filter reduce :
             // first name of all people whose age is <30
             aont output = users.filter(x=> x.age<30).map(x=> x.fname);
 
+
+| Method   | Input → Output                              | Returns                        | Typical Use Case    |
+| -------- | ------------------------------------------- | ------------------------------ | ------------------- |
+| `map`    | Each element → transformed element          | New array (same size)          | Transform data      |
+| `filter` | Each element → condition check (true/false) | New array (smaller/equal size) | Select subset       |
+| `reduce` | Each element → combined into single result  | Single value (any type)        | Aggregate / Compute |
+
+
 Callback hell or Pyramid of Doom:
     -   One callback inside another callback inside callback or a lot of nested callback.
 Inversion of Control :
-    -   We loose control of our program because we passed that callback fn into another fn and now we have given the control of 
-        that f to some other fn.And now we don't know whether that fn will ever execute our callback or not.
+    -   We lose control of our program because we passed that callback fn into another fn and now we have given the control of 
+        that fn to some other fn. And now we don't know whether that fn will ever execute our callback or not.
 
 Promise :
-    -   Promise is an object that represt an eventual completion or failure of an asynchronous event.
+    -   Promise is an object that represent an eventual completion or failure of an asynchronous event.
     -   PromiseState represents the current state of a promise.Promise has 3 state. Initially it is in pending state.
         Pending, Fulfilled & Rejected.
     -   Promise can only be resolved once and promise obejcts are immutable too so we can just pass it here n there in our code.
