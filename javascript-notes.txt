@@ -109,6 +109,77 @@ Temporal Dead Zone :
     -   let and const can be hoisted and memory is also created for let and const but its not in global space rather in script space.
     -   
 
+
+Var vs let vs const:
+    Scope:
+        -   var | Function-scoped | If declared outside the function, it becomes global.
+        -   let | Block-scoped | Visible only within a block {} it is declared in (like loops, if statements)
+        -   const | Block-scoped | Same as let , visible only inside a block
+    
+    Redeclaration & Re-assignmemnt:
+        -   var | Redeclare allowed | re-assignment allowed |eg. var a = 1; var a = 2;
+        -   let | Redeclare not allowed | Re-assignment allowed | eg. let a = 1; a =2;
+        -   const | Redeclare not allowed | Re-assignment not allowed | eg. const c = 1, // can't change c = 2;
+            But objects and arrays declared as const can be be mutated.
+                eg. const users = { name : 'Devesh' };
+                    users.name = 'Sam';
+
+    Hoisting:
+        -      Keyword	    Hoisted?	Accessible Before Declaration?
+                var	         ✅ Yes	     ✅ Undefined (not error)
+                let	         ✅ Yes	     ❌ Temporal Dead Zone (Error)
+                const	     ✅ Yes	     ❌ Temporal Dead Zone (Error)
+
+    Best Practice: use const by default, use let in case of reassignmemnt & avoid var.
+
+    Eg1. Looping 
+        for (var i = 0; i < 3; i++) {
+            document.body.innerHTML += `<button id="btn${i}">Button ${i}</button>`;
+            
+            document.getElementById(`btn${i}`).addEventListener("click", function() {
+                console.log("Button index:", i);
+            });
+        }
+
+        Output : if using var, output will be 3, 3, 3. because by the time button is clicked, loop is finished and i is 3(final value).
+                 As, in case of var, one shared variable across loop iterations.
+
+        Fix: use let. beacuse since let is a scoped variable, new variable for each iteration.
+
+    Eg2. setTimeout when doing async call
+        for( var i = 0; i < 3; i++){
+            setTimeout(() => {
+                console.log("index:", i);
+            }, 1000);
+        }
+        Output: Index: 3,Index: 3,Index: 3
+
+        Fix1: use let.
+        Fix2. use closure.
+            eg. for (var i = 0; i < 3; i++) {
+                    (function(j) {
+                        setTimeout(() => {
+                        console.log("Index:", j);
+                        }, 1000);
+                    })(i);
+                }
+            Explaination: here immediately it captures the value of i and put it inside j.
+
+Difference between == and ===
+    -   Equality operator(==), it checks both operator and perform type correction if the types are different.
+        -   Also called loose equality or abstract equality.
+        Javascript will try to convert one or both operands to common type before comparison.
+        eg. 3 == '3' // true 'string is converted to number'
+            0 == false // true 'false is converted to 0'
+            null == undefined // true
+
+    -   Strict Equality Operator(===), compares both value and type.
+        -   5 === '5' // false
+            0 === false // false
+            null === undefined // false
+
+
+
 Block {}:
     -   Block is also kbnow as compound statement.
     -   A block is used to combine multiple js statement in one group.
@@ -340,15 +411,44 @@ Callback Function :
                 So, all this variables that was in the closure will be garbage collected.
 
 Event loop :
+    -   Event loop is a mechanism that allows javascript to handle asynchronous operations without blocking the main thread.
     -   The purpose of event loop is to constantly monitor the call stack, microtask queue and the callback queue 
         if there is any callback fn present and 
         then it will create a executioj context for that callback fn and puts that callback fn inside the callstack.
         Refer to Callback.js
 
+        CallStack --> WebApi's --after done --> Task Queues(Macro-tasks | Micro-tasks) --Event loop --> Moves taks to the call stack 
+
     -   Microtask Queue :
         -   Microtask queue has higher priority.
         -   First microtask queue will execute and then callback queue will execute.
         -   All the callback fn that comes with promises or mutation server will go in microtask queue.
+
+        Eg. console.log("Start");
+            setTimeout(() => console.log("Timeout"), 0);
+            console.log("End");
+
+            Execution:
+                1. console.log("Start") -> runs immediately
+                2. setTImeout -> sent to web api, wait for 0ms -> goes to macro-tasks queue
+                3. console.log("End") -> runs immediately
+                4. Stack is now empty -> Event loop pulls from macro-task queue -> logs Timeout
+            Output: Start, End, Timeout
+
+        Eg2. promise vs setTimeout
+                console.log("Start");
+                setTimeout(() => console.log("Timeout"), 0);
+                Promise.resolve().then(() => console.log("Promise"));
+                console.log("End");
+
+            Execution: 
+                1. console.log("Start") -> runs immediately
+                2. setTImeout -> sent to web api, wait for 0ms -> goes to macro-tasks queue
+                3. promise -> goes to microtask queue
+                3. console.log("End") -> runs immediately
+                4. Stack is now empty -> runs microtask forst -> Promise -> Then macro task -> Timeout
+
+            Output: Start, ENd, Promise, Timeout
 
 Trust Issue with setTimeout :
     -   
@@ -579,44 +679,6 @@ Function Curring :
             let multiplyByThree = multiply(10);
             multiplyByThree(2);
 
-this keyword : 
-    -   
-
-Set interval :
-    -   
-
-Debounce :
-    -   
-
-Throttling :
-    -   
-
-Arrow fn vs regular fn :
-    -   
-
-Event Bubbling : 
-    -   
-
-Spread Operator vs Rest Operator :
-    -   
-
-Pure function :
-    -   
-
-Merge to an array :
-    -   
-
-Copy of an object :
-    -   
-
-Async await :
-    -   
-
-Es5 vs es6 :
-    -   
-
-Create a user token :
-    -   
 
 React Fragment <></> or <React.Fragment></React.Fragment>: 
 
@@ -838,20 +900,269 @@ Call, apply & bind :
             letPrintMyName();
 
 Debouncing :
+    -   Debounced function delays execution untill after a certain 'qient time' has passed since the last event.
+    -   If the event happens again before the delay, timer resets.
     -   It is used for better search experience. and is very performant.
     -   Generally used for performance optimization.
     -   it is done by limiting the rate of function call.
     -   if the difference between two keystrokes is 300 ms then we make a call
+
+    Explaination:
+        -   if you type in search , and on every key press api call is made. then by debouncing,
+            it will wait for the user to stop typing before making API request.
+        -   Same happens in case of resizing.
         eg. search, resize, buttonclick- machine gun
 
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+            }
 
+            // Usage:
+            const handleSearch = debounce((query) => {
+            console.log("Searching for:", query);
+            }, 500);
+
+            input.addEventListener("input", (e) => handleSearch(e.target.value));
+
+            🧠 Behavior:
+                User types “h” → timer starts (500ms)
+                User types “he” before 500ms → timer resets
+                User stops typing → after 500ms, function executes ✅
+                ✅ Result: function runs only once after user stops typing.
 
 Throttling :
+    -   Throttle fn make sure that it executes no more than once in a given time window.
     -   Generally used for performance optimization.
     -   it is done by limiting the rate of function call.
     -   Only make an api call after certain interval of time.
-        eg. search, resize , buttonclick- machine gun
+        eg. scroll events, mouse-move tracking.
 
-    
+        function throttle(fn, limit) {
+            let inThrottle;
+            return function(...args) {
+                if (!inThrottle) {
+                fn.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+                }
+            };
+            }
+
+            // Usage:
+            const handleScroll = throttle(() => {
+            console.log("Scroll event:", window.scrollY);
+            }, 500);
+
+            window.addEventListener("scroll", handleScroll);
+
+            🧠 Behavior:
+                Scroll event fires many times per second
+                Function runs immediately once ✅
+                Then ignores events for 500ms
+                Runs again after 500ms ✅
+                ✅ Result: function runs periodically, not continuously.
 
 
+What is memoization and how do you implement it?
+    -   We use memoization for optimizing our application.
+
+    3 ways to optimize.
+        1. React.Memo: Component level optimization
+            -   Wraps a functional component to prevent re-renders if props haven't changed.
+
+                const Child = React.memo(({ count }) => {
+                    console.log("Child rendered");
+                    return <div>Count: {count}</div>;
+                });
+
+                function Parent() {
+                    const [count, setCount] = useState(0);
+                    const [text, setText] = useState("");
+
+                    return (
+                        <>
+                        <Child count={count} /> {/* ✅ Only re-renders when `count` changes */}
+                        <input value={text} onChange={e => setText(e.target.value)} />
+                        <button onClick={() => setCount(count + 1)}>+</button>
+                        </>
+                    );
+                }
+
+                Without react.memo, everytime you type in the input, the parent re-renders -> child re-renders too.
+                With react.memo, child skips re-render, if props are the same.
+
+        2. useMemo: Value-level optimization
+            -   catches the result of a computations so it's not recalculated on every render. 
+                function ExpensiveComponent({ num }) {
+                    const expensiveValue = useMemo(() => {
+                        console.log("Calculating...");
+                        return num * 1000; // imagine something heavy
+                    }, [num]);
+
+                    return <div>Value: {expensiveValue}</div>;
+                }
+
+                🧠 Without useMemo: calculation runs every render
+                ✅ With useMemo: runs only when num changes
+
+        3. useCallback: Function-level optimization
+            -   Returns a memoized function reference, so it dosen't get recreated on every render.
+                const Child = React.memo(({ onClick }) => {
+                    console.log("Child rendered");
+                    return <button onClick={onClick}>Click</button>;
+                    });
+
+                    function Parent() {
+                    const [count, setCount] = useState(0);
+
+                    const handleClick = useCallback(() => {
+                        console.log("Clicked");
+                    }, []); // ✅ same reference across renders
+
+                    return (
+                        <>
+                        <Child onClick={handleClick} />
+                        <button onClick={() => setCount(c => c + 1)}>Increment</button>
+                        </>
+                    );
+                }
+
+
+What is the difference between synchronous and asynchronous programming?
+
+    | Feature          | **Synchronous**      | **Asynchronous**                     |
+    | ---------------- | -------------------- | ------------------------------------ |
+    | Execution        | Line by line         | Non-blocking                         |
+    | Next line waits? | ✅ Yes                | ❌ No                                |
+    | Speed            | Slower               | Faster (non-blocking)                |
+    | Example          | `console.log`, loops | `setTimeout`, `fetch`, `async/await` |
+    | Use cases        | Simple tasks         | Network requests, timers, I/O        |
+
+
+What are generators in JavaScript?
+    -   Geenrators are a special type of functions that can be paused and resumed later.
+    -   The * (asterisk) marks it as a generator.
+    -   Executes code until the next yield.
+    -   Unlike regular functions that run from start to finish, a generator can yield values one by one, and resume from where it left off using the yield keyword.
+    eg. used in redux-saga.
+        import { call, put, takeEvery } from 'redux-saga/effects';
+        import { fetchDataApi } from './api';
+        import { fetchDataSuccess, fetchDataFailure } from './actions';
+
+        // Worker saga: does the async task
+        function* fetchDataSaga(action) {
+        try {
+            const data = yield call(fetchDataApi, action.payload); // call API
+            yield put(fetchDataSuccess(data));                     // dispatch success action
+        } catch (error) {
+            yield put(fetchDataFailure(error.message));           // dispatch failure action
+        }
+        }
+
+        // Watcher saga: watches for specific actions
+        function* watchFetchData() {
+        yield takeEvery('FETCH_DATA_REQUEST', fetchDataSaga);
+        }
+
+        // Root saga
+        export default function* rootSaga() {
+        yield watchFetchData();
+        }
+
+    -   There are few redux-saga effects ( like. call, put, takeEvery, takeLatest etc)
+
+            | Helper                         | Usage                                        |
+            | ------------------------------ | -------------------------------------------- |
+            | `call(fn, ...args)`            | Calls a function (usually API)               |
+            | `put(action)`                  | Dispatches a Redux action                    |
+            | `takeEvery(actionType, saga)`  | Watches for actions and runs saga every time |
+            | `takeLatest(actionType, saga)` | Runs saga for latest action only             |
+            | `delay(ms)`                    | Pauses saga for a given time                 |
+
+        🧠 Why Use Generators?
+            1. Lazy Iteration (produce values one at a time)
+            2. Infinite sequences
+            3. Custom iterators
+            4. Async control flow (before async/await existed)
+            5. Pausing execution of complex processes
+
+
+What is event delegation?
+    -   Event Delegation is a technique where you attach a single event listener to a parent element instead of attaching listeners to multiple child elements.
+
+What is module pattern in JavaScript? How does ES6 module system work?
+    -   The Module Pattern is a way to structure your code into self-contained units (modules) that:
+            -   Encapsulate private data and methods
+            -   Expose only what’s necessary (public API)
+            -   It helps prevent global namespace pollution and keeps code maintainable and reusable.
+
+
+    | Feature             | Module Pattern                | Modern ES6 Modules                   |
+    | ------------------- | ----------------------------- | ------------------------------------ |
+    | Encapsulation       | ✅ Private variables           | ✅ Private by default in module scope |
+    | Public API          | ✅ Exposed via returned object | ✅ Exposed via `export`               |
+    | Namespace pollution | ❌ Prevents globals            | ❌ Prevents globals                   |
+    | Syntax              | IIFE, closures                | `import` / `export`                  |
+
+
+Explain WeakMap and WeakSet and when you’d use them.
+
+What are Symbols in JavaScript?
+    -   Symbols are mainly used when you need truly unique identifiers or want to avoid property name collisions in objects.
+        const sym1 = Symbol();
+        const sym2 = Symbol("id");
+
+        console.log(sym1 === sym2); // false
+
+        no two symbols are same.
+
+What are keys in react lists and why are they important?
+    -   A key is a special string or number that uniquely identifies an element in a list.
+
+        const fruits = ["Apple", "Banana", "Cherry"];
+
+        function FruitList() {
+        return (
+            <ul>
+            {fruits.map((fruit, index) => (
+                <li key={index}>{fruit}</li>
+            ))}
+            </ul>
+        );
+        }
+
+        Good key: uniques & stable
+        Bad key: index(could be problem if list changes dynamically)
+
+        🧠 Rules for Keys
+                -   Must be unique among siblings.
+                -   Don’t use array index if list can change dynamically.
+                -   Should be stable (don’t generate new key every render).
+
+        Why are they important?
+            Efficient Updates
+                React uses Virtual DOM diffing to update only the changed elements.
+                Keys help React match old and new elements.
+                Without keys, React may re-render unnecessarily or reuse wrong elements.
+
+            Preserve Component State
+                If a list item is a component with state, the key ensures state stays with the right element.
+
+            Prevent Bugs
+                Without unique keys, UI may behave unpredictably when adding/removing items.
+
+this keyword : 
+    -   
+
+Set interval :
+    -   
+
+Arrow fn vs regular fn :
+    -   
+
+Create a user token :
+    -   
