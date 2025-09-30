@@ -1089,8 +1089,26 @@ Tell me about a time you optimized a React app’s performance.
 How do you debug complex state issues in React?
 
 How do you ensure code quality in a large front-end project?
+    -   | Aspect               | Tool / Practice                              |
+        | -------------------- | -------------------------------------------- |
+        | Linting & Formatting | ESLint, Prettier, Husky, lint-staged         |
+        | Typing               | TypeScript                                   |
+        | Testing              | Jest, React Testing Library, Cypress         |
+        | Architecture         | Feature-based structure, reusable components |
+        | CI/CD                | GitHub Actions / GitLab CI                   |
+        | Documentation        | Storybook, Typedoc, Markdown docs            |
+        | Code Complexity      | ESLint rules, SonarQube                      |
+        | Security             | npm audit, Snyk                              |
+
 
 How do you handle version upgrades in React or dependencies?
+    -   Audit outdated dependencies (npm outdated)
+        Check changelog & breaking changes
+        Upgrade minor/patch versions first, major versions carefully
+        Test locally (lint, tests, manual)
+        Run production build
+        Commit & merge if stable
+        Rollback if necessary
 
 What’s the most challenging bug you’ve fixed in React/JS?
 
