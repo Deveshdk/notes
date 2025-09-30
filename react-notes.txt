@@ -818,35 +818,295 @@ React Life Cycle Methods :
         -   static getDerivedStateFromError(error)-- used for error boundries.
         -   componentDidCatch(error,info) -- allows you to log an error or perform any action.
 
+    Order:
+    Constructor -> render -> componentDidMount (Mounting phase)
+    render -> componentDidUpdate (Updating phase)
+    componentWillUnmount (Unmounting phase)
 
-useMemo & useCallback :
-    -   The useMemo hook is used to memoize the result of a computation.
-        It helps in avoiding unnecessary re-computation of a value during re-renders.
-        It takes a function and an array of dependencies, and it returns a memoized version of the function's result.
-        eg. import React, { useMemo } from 'react';
+    Error Handling (componentDidCatch)
 
-            const MyComponent = ({ prop1, prop2 }) => {
-            const memoizedValue = useMemo(() => {
-                // Expensive computation based on props
-                return prop1 + prop2;
-            }, [prop1, prop2]);
+    Eg.
+        import React, { useState, useEffect } from "react";
 
-            return <div>{memoizedValue}</div>;
+        function MyComponent() {
+        const [count, setCount] = useState(0);
+
+        // ✅ Runs once after mount (like componentDidMount)
+        useEffect(() => {
+            console.log("Component mounted");
+            // fetch data or start interval
+
+            return () => {
+            console.log("Component unmounted");
+            // cleanup (like componentWillUnmount)
             };
+        }, []); // empty dependency = run once
 
-    -   useCallback hook is used to memoize a callback function.
-        It's especially useful when you need to pass a callback to a child component, and
-        you want to avoid unnecessary re-creation of the callback on each render.
-        eg. import React, { useCallback } from 'react';
+        // ✅ Runs every time count changes (like componentDidUpdate for count)
+        useEffect(() => {
+            console.log("Count updated:", count);
+        }, [count]);
 
-            const MyComponent = ({ onClick }) => {
-            const memoizedCallback = useCallback(() => {
-                // Handle click
-                onClick();
-            }, [onClick]);
+        return (
+            <div>
+            <p>{count}</p>
+            <button onClick={() => setCount(count + 1)}>Increment</button>
+            </div>
+        );
+        }
 
-            return <button onClick={memoizedCallback}>Click me</button>;
-            };
+How do you handle form in React?
+    -   2 ways to handle form in React:
+        1. Controlled Component(most common)
+            -   form elements are controlled by react state.
+            -   the valie of each element is storedd in component state & updtaed by onChange.
+                -   import React, { useState } from "react";
+
+                    function MyForm() {
+                    const [formData, setFormData] = useState({
+                        name: "",
+                        email: ""
+                    });
+
+                    const handleChange = (e) => {
+                        const { name, value } = e.target;
+                        setFormData({ ...formData, [name]: value });
+                    };
+
+                    const handleSubmit = (e) => {
+                        e.preventDefault(); // prevent page refresh
+                        console.log("Form submitted:", formData);
+                    };
+
+                    return (
+                        <form onSubmit={handleSubmit}>
+                        <label>
+                            Name:
+                            <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            />
+                        </label>
+
+                        <label>
+                            Email:
+                            <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            />
+                        </label>
+
+                        <button type="submit">Submit</button>
+                        </form>
+                    );
+                    }
+
+                    export default MyForm;
+
+        2. Uncontrolled Component
+            -   Form date are handled by the DOM, not react.
+            -   YOu use refs to access value directly.
+                -   import React, { useRef } from "react";
+
+                    function UncontrolledForm() {
+                    const nameRef = useRef();
+
+                    const handleSubmit = (e) => {
+                        e.preventDefault();
+                        console.log("Name:", nameRef.current.value);
+                    };
+
+                    return (
+                        <form onSubmit={handleSubmit}>
+                        <input type="text" ref={nameRef} />
+                        <button type="submit">Submit</button>
+                        </form>
+                    );
+                    }
+
+        2. React Hook Form
+            -   import { useForm } from "react-hook-form";
+
+                function HookForm() {
+                const { register, handleSubmit } = useForm();
+
+                const onSubmit = (data) => console.log(data);
+
+                return (
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <input {...register("name")} placeholder="Name" />
+                    <input {...register("email")} placeholder="Email" />
+                    <button type="submit">Submit</button>
+                    </form>
+                );
+                }
+
+        | Approach         | Controlled Components  | Uncontrolled Components   |
+        | ---------------- | ---------------------- | ------------------------- |
+        | Data stored in   | React state            | DOM (via refs)            |
+        | Best for         | Most forms, validation | Simple or 3rd-party forms |
+        | onChange handler | Required               | Not required              |
+        | Example          | `value` + `onChange`   | `ref`                     |
+
+
+How to avoid Infinite loops?
+    1. Use proper dependency array
+        eg.   useEffect(() => {
+                console.log("Runs once");
+            }, []); // ✅ Runs only once (on mount)
+    2. Dont update state indide useEffect, if necessary wrap it inside a condition. eg useEffect(() => {
+                                                                                            if (data === null) {
+                                                                                                fetchData(); // ✅ Only runs once when data is null
+                                                                                            }
+                                                                                            }, [data]);
+    3. Avoid non-stable dependencies
+        -   if you put a new object/function in dependencies, it changes on every render render.
+                -   eg useEffect(() => {
+                        doSomething();
+                        }, [ { name: "John" } ]); // new object every render
+            Fix: define objects/functions outside or use useCallback or useMemo
+                -   eg. const config = useMemo(() => ({ name: "John" }), []);
+                            useEffect(() => {
+                            doSomething();
+                            }, [config]); // ✅ stable reference
+
+    4. Avoid derived state dependency.
+
+
+
+What are custom hooks and when to use use and why?
+    -   | Concept  | Description                                          |
+        | -------- | ---------------------------------------------------- |
+        | What     | A function starting with `use` that uses React hooks |
+        | Purpose  | Reuse logic across components                        |
+        | Benefits | Cleaner code, DRY, reusable                          |
+        | Examples | `useFetch`, `useLocalStorage`, `useWindowWidth`      |
+
+How do you manage global state in a large React app?
+    -   context Api, REDUX, Zustand
+
+    | Library             | Type                          | Built-in?              | Ideal For                         |
+    | ------------------- | ----------------------------- | ---------------------- | --------------------------------- |
+    | **Context API**     | Basic global state sharing    | ✅ Yes (React built-in) | Simple, small apps                |
+    | **Redux (Toolkit)** | Centralized predictable state | ❌ No (needs package)   | Large-scale, complex apps         |
+    | **Zustand**         | Lightweight store with hooks  | ❌ No (install)         | Medium apps, simpler global state |
+
+
+What are the downsides of using Context API for everything?
+    -   When a context value changes, all components that consume it re-render — even if they don’t use the changed part of the value.
+    -   No built-in optimization tools. eg. no built in selectors, no devtools to inspect time-travel state, no no built in middlewares for side effects(async actions, loggong)
+    -   For small apps, Context is fine. But in large apps with multiple concerns:
+            Auth
+            Theme
+            Cart
+            Notifications
+            Permissions
+            You’ll end up with many nested providers:
+    -   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+How do you manage global state in a large React app?
+
+Compare Context API vs Redux vs Zustand.
+
+What are the downsides of using Context API for everything?
+
+How does Redux work internally? Explain reducers, actions, store, and middleware.
+
+What is the role of Immer.js or Redux Toolkit?
+
+🔹 Performance Optimization
+
+How do you improve React app performance?
+
+When and how do you use React.memo?
+
+What causes unnecessary re-renders? How to prevent them?
+
+How would you lazy load a component?
+
+What is code splitting?
+
+🔹 Routing and API Calls
+
+How does React Router work?
+
+What is the difference between BrowserRouter and HashRouter?
+
+How do you make API calls in React? Which lifecycle method/hook do you use?
+
+How to handle loading, error, and success states in API calls?
+
+🔹 Testing & Architecture
+
+What tools do you use for testing React components? (Jest, RTL, Cypress)
+
+How do you test components that use hooks?
+
+How do you structure a large React app? Folder structure, naming conventions?
+
+How do you handle environment variables in React?
+
+Explain how you handle authentication (JWT, tokens, etc.)
+
+🔹 React Internals & Ecosystem
+
+What is React Fiber?
+
+Explain how reconciliation and diffing algorithms work.
+
+What’s the difference between React 17 and React 18?
+
+Explain Concurrent Rendering and Suspense.
+
+What is Server-Side Rendering (SSR)? When to use Next.js?
+
+💡 Behavioral / Scenario-based Questions
+
+Tell me about a time you optimized a React app’s performance.
+
+How do you debug complex state issues in React?
+
+How do you ensure code quality in a large front-end project?
+
+How do you handle version upgrades in React or dependencies?
+
+What’s the most challenging bug you’ve fixed in React/JS?
+
+🧰 Bonus Topics (For Senior Roles)
+
+TypeScript with React
+
+Testing React apps (Jest + RTL)
+
+React Query / SWR
+
+Error boundaries
+
+Accessibility (a11y)
+
+Security (XSS, CSRF in React)
 
 
 
