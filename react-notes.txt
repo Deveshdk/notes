@@ -1077,6 +1077,15 @@ What is React Fiber?
 Explain how reconciliation and diffing algorithms work.
 
 What’s the difference between React 17 and React 18?
+    -   | Aspect             | React 17            | React 18                               |
+        | ------------------ | ------------------- | -------------------------------------- |
+        | Root API           | `ReactDOM.render`   | `createRoot().render`                  |
+        | Concurrent Mode    | ❌                  | ✅ (opt-in)                            |
+        | Automatic Batching | Only React events   | All updates (timeouts, promises, etc.) |
+        | New Hooks          | —                   | `useId`, `startTransition`             |
+        | Suspense           | Code-splitting only | Code-splitting + data fetching         |
+        | SSR                | Standard            | Streaming, Suspense support            |
+
 
 Explain Concurrent Rendering and Suspense.
 
