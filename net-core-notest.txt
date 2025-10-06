@@ -1,0 +1,875 @@
+1. Why .Net core?
+	It is much faster, configurable, modular, scalable, extensible, and has cross-platform support.
+	It can work with both .NET Core and .net framework via the .NET standard framework.
+	It is best suitable for developing cloud-based such as web applications, mobile applications, and IoT applications.
+
+2. Feauture of Asp.Net Core?
+	It has good support for asynchronous programming.
+	Multiple hosting ways are supported.
+	Built in support for Dependency Injection.
+	There is no web.config file. We can store the custom configuration into an appsettings.json file.
+	There is no Global.asax file. We can now register and use the services in the startup class
+	Support WebSocket and SignalR
+	Provide protection against CSRF (Cross-Site Request Forgery)
+
+3. 
+
+
+web.config  ko replace kiya appsettings.json
+global.asax file ko replace kiya startup.cs  --- saara services register krte h aur use krte h
+
+   public void ConfigureServices(IServiceCollection services)
+
+Startup class is used to configure services through the ConfigureServices method. This method is called at runtime and is responsible for registering services with the built-in dependency injection container.
+
+services.AddTransient<IUserService, UserService>();
+
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env) 
+ --  used to define how the application responds to HTTP requests
+Middleware Configuration:
+Routing Configuration:
+Environment-Specific Configuration:
+It receives an IApplicationBuilder instance, which is used to configure the middleware pipeline, and an IHostingEnvironment instance, which provides information about the hosting environment 
+
+
+Middleware :
+	A. Static Files Middleware:   app.UseStaticFiles();
+	B. Authentication Middleware: app.UseAuthentication();
+	C. Routing Middleware: app.UseRouting();
+	D. Error Handling Middleware: app.UseExceptionHandler("/Home/Error");
+	E. Logging Middleware:app.UseMiddleware<LoggingMiddleware>();
+
+
+
+
+
+
+public virtual DbSet<Messages> Messages { get; set; }   --- context file
+
+
+Entity
+{
+    [Table("industry_master")]                                              
+    public class IndustryMaster
+    {
+        public IndustryMaster()
+        {
+            UserIndustry = new HashSet<UserIndustry>();
+        }
+
+        [Key]
+        [Column("id")]
+        public long Id { get; set; }
+
+        [Column("industry")]
+        public string Industry { get; set; }
+
+        [InverseProperty("IndustryMaster")]
+        public virtual ICollection<UserIndustry> UserIndustry { get; set; }
+    }
+}
+
+
+InverseProperty
+
+
+
+LaunchSettings.json
+
+ "Lawyer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    }
+
+
+
+Model
+
+   public class AllRoomsModel
+    {
+        [JsonProperty("roomId")]
+        public string RoomId { get; set; }
+        [JsonProperty("id")]
+        public long Id { get; set; }
+        [JsonProperty("roomPhotoPath")]
+        public string RoomPhotoPath { get; set; }
+        [JsonProperty("lastChat")]
+        public string LastChat { get; set; }
+        [JsonProperty("roomName")]
+        public string RoomName { get; set; }
+    }
+	
+HTTPS v/s HTTP
+
+HTTPS is HTTP with encryption and verification.
+ The only difference between the two protocols is that HTTPS uses TLS (SSL) to encrypt normal HTTP requests and responses, and to digitally sign those requests and responses.
+ As a result, HTTPS is far more secure than HTTP.
+ Transport Layer Security (TLS) is the upgraded version of SSL that fixes existing SSL vulnerabilities.
+ 
+ HTTP does not encrypt data during client-to-server communication,
+ which means that any data transmitted over HTTP is sent in plain text without any encryption or security mechanisms.
+ As a result, it can be intercepted and read by anyone with access to the network traffic, including cybercriminals.
+ 
+ CORS
+ Cross-Origin Resource Sharing  is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port)
+ other than its own from which a browser should permit loading resources.
+ CORS also relies on a mechanism by which browsers make a "preflight" request to the server hosting the cross-origin resource,
+ in order to check that the server will permit the actual request.
+ In that preflight, the browser sends headers that indicate the HTTP method and headers that will be used in the actual request.
+ 
+ Linq
+ 
+ 	
+IEnumerable Vs IQueryable In LINQ
+
+1. IEnumerable exists in the System.Collections vs IQueryable exists in the System.Linq Namespace.
+2  IEnumerable is suitable for querying data from in-memory collections like List, Array and so on vs IQueryable is suitable for querying data from out-memory (like remote database, service) collections.
+3. While querying data from the database, IEnumerable executes "select query" on the server-side, loads data in-memory on the client-side and then filters the data vs 
+While querying data from a database, IQueryable executes a "select query" on server-side with all filters.
+4. IEnumerable is beneficial for LINQ to Object and LINQ to XML queries vs IQueryable is beneficial for LINQ to SQL queries.
+
+IEnumerable and IQueryable are used for data manipulation in LINQ from the database and collections.
+ IQueryable<Customer> custQuery =
+    from cust in db.Customers
+    where cust.City == "London"
+    select cust;
+	
+IEnumerable<int> scoreQuery = //query variable
+    from score in scores //required
+    where score > 80 // optional
+    orderby score descending // optional
+    select score;
+	
+	//Query syntax:
+        IEnumerable<int> numQuery1 =
+            from num in numbers
+            where num % 2 == 0   ------- or can be written using lambda operator like (num => num%2 ==0)
+            orderby num
+            select num;
+
+        //Method syntax:
+        IEnumerable<int> numQuery2 = numbers.Where(num => num % 2 == 0).OrderBy(n => n); 
+
+ Nth item in list from Linq
+ var nthItem = items.Skip(n).First();
+
+		
+
+
+
+Asynchronous v Synchronous
+
+Synchronous = happens at the same time. Asynchronous = doesn't happen at the same time.
+
+Asynchronous APIs are a sort of web service that allows users to conduct multiple requests at the same time without waiting for the previous request to execute.
+ This means that the server may process multiple requests at the same time, decreasing the API's overall response time.
+ 
+If an API call is synchronous, it means that code execution will block (or wait) for the API call to return before continuing.
+
+The first and most obvious example is if you're using email or some other form of delayed communication, such as instant messaging.
+ Multiple different asynchronous messaging protocols can be used for APIs, such as Webhooks, WebSockets, GraphQL subscriptions, and Server-sent events (SSE)
+ 
+In Synchronous transmission, There is no gap present between data. It is more efficient and more reliable than asynchronous transmission to transfer a large amount of data.
+
+The await keyword waits for the async method until it returns a value. So the main application thread stops there until it receives a return value.
+
+
+
+
+
+Routing
+
+  public static void Register(HttpConfiguration config)
+    {
+        // Attribute routing.
+        config.MapHttpAttributeRoutes();
+
+        // Convention-based routing.
+        config.Routes.MapHttpRoute(
+            name: "DefaultApi",
+            routeTemplate: "api/{controller}/{id}",
+            defaults: new { id = RouteParameter.Optional }
+        );
+    }
+	attribute routing uses attributes to define routes. Attribute routing gives you more control over the URIs in your web API
+
+
+
+	
+Dependency Injection
+Dependency injection (DI) is a design pattern and a technique widely used in software development to achieve loose coupling between components and promote modularity and maintainability. In dependency injection, the dependencies of a class are provided from the outside rather than being created or managed internally by the class. This helps in making classes more reusable, testable, and easier to maintain. 
+
+Scoped
+
+In this service, with every HTTP request, we get a new instance.
+The same instance is provided for the entire scope of that request.
+This is a better option when you want to maintain a state within a request.
+services.AddScoped<IAuthService,AuthService>();
+
+Transient
+
+A new service instance is created for each object in the HTTP request.
+This is a good approach for the multithreading approach because both objects are independent of one another.
+The instance is created every time they will use more memory and resources and can have a negative impact on performance
+Utilize for the lightweight service with little or no state.
+
+Singleton
+
+Only one service instance was created throughout the lifetime.
+Reused the same instance in future, wherever the service is required
+Since it's a single lifetime service creation, memory leaks in these services will build up over time.
+Also, it is memory efficient as they are created once reused everywhere.
+services.AddSingleton<ILoggingService, LoggingService>();
+
+
+
+
+
+Http Methods
+
+Request Methods
+PATCH is used to apply partial updates to a resource, meaning that only the fields that need to be changed are sent in the request body.
+PUT is used to replace the entire resource with a new representation, meaning that all the fields of the resource are sent in the request body, even if they are not modified.
+PUT is Idempotent (means safe to repeat without changing the outcome beyond the first execution.)
+
+HEAD
+Same as GET, but transfers the status line and header section only.
+
+Response Methods
+1	1xx: Informational
+It means the request was received and the process is continuing.
+
+2	2xx: Success
+It means the action was successfully received, understood, and accepted.
+
+3	3xx: Redirection
+It means further action must be taken in order to complete the request.
+
+4	4xx: Client Error
+It means the request contains incorrect syntax or cannot be fulfilled.
+
+5	5xx: Server Error
+It means the server failed to fulfill an apparently valid request.
+
+
+
+
+
+
+	A. How do i secure my api from public use?
+[ValidateReferrer]  --- This validates where the API request has been made. 
+[RequestLimit("Test-Action", NoOfRequest = 5, Seconds = 10)]  
+[Authorize]
+
+
+
+Const v Readonly
+The main difference between const and readonly keywords in C# is that const need to be defined at the time of assignment,
+ while readonly field can be defined at runtime. Const's are implicitly static, while readonly values don't have to be static
+ 
+ const is compile time, and allow compiler to perform some kind of optimization
+
+
+ 
+ Q. How to generate bearer token
+ 
+ A Bearer token is a type of token used for authentication and authorization and
+ is used in web applications and APIs to hold user credentials and indicate authorization for requests and access.
+ 
+ IPublicClientApplication app;
+ string[] scopes = new string[] { "user.read" };
+ result = await app.AcquireTokenByUsernamePassword(scopes,
+                                                    "joe@contoso.com",
+                                                     securePassword)
+ app.AcquireTokenByUsernamePassword   ---method 
+ 
+ Ways to add bearer token 
+ client.DefaultRequestHeaders.Add("Authorization", "Bearer " + #YourToken);
+ client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", #YourToken);
+ 
+ 
+
+
+ Rest vs Soap
+ 
+ SOAP and REST are two different approaches to API design. The SOAP approach is highly structured and uses XML data format.
+ REST is more flexible and allows applications to exchange data in multiple formats.
+ 
+ Here are other similarities between SOAP and REST:
+
+They both describe rules and standards on how applications make, process, and respond to data requests from other applications
+They both use HTTP, the standardized internet protocol, to exchange information
+They both support SSL/TLS for secure, encrypted communication
+
+Simple Object Access Protocol
+
+Representational State Transfer
+
+What is it?
+
+SOAP is a protocol for communication between applications
+
+REST is an architecture style for designing communication interfaces.
+
+Design
+
+SOAP API exposes the operation.
+
+REST API exposes the data.
+
+Transport Protocol
+
+SOAP is independent and can work with any transport protocol.
+
+REST works only with HTTPS.
+
+Data format
+
+SOAP supports only XML data exchange.
+
+REST supports XML, JSON, plain text, HTML.
+
+Performance
+
+SOAP messages are larger, which makes communication slower.
+
+REST has faster performance due to smaller messages and caching support.
+
+Scalability
+
+SOAP is difficult to scale. The server maintains state by storing all previous messages exchanged with a client.
+
+REST is easy to scale. It’s stateless, so every message is processed independently of previous messages.
+
+Security
+
+SOAP supports encryption with additional overheads.
+
+REST supports encryption without affecting performance.
+
+Use case
+
+SOAP is useful in legacy applications and private APIs.
+
+REST is useful in modern applications and public APIs.
+
+
+
+
+Solid Principle - https://www.c-sharpcorner.com/UploadFile/damubetha/solid-principles-in-C-Sharp/
+1. SOLID Principles with Easy Examples | OOPs SOLID Principles Interview Question - Low Level Design
+
+
+Single Responsibility Principle (SRP):
+	A class should have only one reason to change. It means that a class should have only one responsibility or job, focusing on doing one thing and doing it well.
+Open/Closed Principle (OCP):
+	Software entities (classes, modules, functions, etc.) should be open for Automapper but closed for modification. It encourages using abstraction and inheritance to allow new functionality to be added without altering existing code.
+Liskov Substitution Principle (LSP):
+	Objects of a superclass should be replaceable with objects of its subclass without affecting the correctness of the program. Subtypes should be substitutable for their base types.
+Interface Segregation Principle (ISP):
+	Many client-specific interfaces are better than one general-purpose interface. It advocates breaking down large interfaces into smaller, more specific ones, tailored to the needs of the clients that use them.
+Dependency Inversion Principle (DIP):
+	High-level modules should not depend on low-level modules; both should depend on abstractions. It suggests that abstractions (interfaces or abstract classes) should define the interaction between modules, reducing direct dependencies between classes.
+
+
+
+
+OOPS Concept
+
+OOP is faster and easier to execute
+OOP provides a clear structure for the programs
+OOP helps to keep the C# code DRY "Don't Repeat Yourself", and makes the code easier to maintain, modify and debug
+OOP makes it possible to create full reusable applications with less code and shorter development time
+
+A constructor is a special method that is used to initialize objects. The advantage of a constructor, is that it is called when an object of a class is created.
+ It can be used to set initial values for fields:
+ 
+ public:	The code is accessible for all classes
+ private:	The code is only accessible within the same class
+ protected:	The code is accessible within the same class, or in a class that is inherited from that class.
+ internal:	The code is only accessible within its own assembly.
+ 
+
+The meaning of Encapsulation, is to make sure that "sensitive" data is hidden from users. To achieve this, you must:
+
+declare fields/variables as private
+provide public get and set methods, through properties, to access and update the value of a private field
+
+class Person
+{
+  private string name; // field
+  public string Name   // property
+  {
+    get { return name; }
+    set { name = value; }
+  }
+}
+
+class Program
+{
+  static void Main(string[] args)
+  {
+    Person myObj = new Person();
+    myObj.Name = "Liam";
+    Console.WriteLine(myObj.Name);
+  }
+}
+
+Polymorphism and Overriding Methods
+C# provides an option to override the base class method, by adding the virtual keyword to the method inside the base class, and by using the override keyword for each derived class methods
+
+Overloading is determined at compile time and is static. Overriding is determined at runtime and is dynamic.
+Overloading concerns giving a method with the same name different parameters. Overriding concerns defining a different implementation of the same method in inherited classes.
+
+
+Abstraction
+
+Data abstraction is the process of hiding certain details and showing only essential information to the user.
+Abstraction can be achieved with either abstract classes or interfaces 
+
+Abstract class: is a restricted class that cannot be used to create objects (to access it, it must be inherited from another class).
+
+Abstract method: can only be used in an abstract class, and it does not have a body. The body is provided by the derived class (inherited from).
+
+// Abstract class
+abstract class Animal
+{
+  // Abstract method (does not have a body)
+  public abstract void animalSound();
+  // Regular method
+  public void sleep()
+  {
+    Console.WriteLine("Zzz");
+  }
+}
+
+// Derived class (inherit from Animal)
+class Pig : Animal
+{
+  public override void animalSound()
+  {
+    // The body of animalSound() is provided here
+    Console.WriteLine("The pig says: wee wee");
+  }
+}
+
+class Program
+{
+  static void Main(string[] args)
+  {
+    Pig myPig = new Pig(); // Create a Pig object
+    myPig.animalSound();  // Call the abstract method
+    myPig.sleep();  // Call the regular method
+  }
+}
+
+
+Interface
+
+An interface is a completely "abstract class", which can only contain abstract methods and properties 
+
+Like abstract classes, interfaces cannot be used to create objects (in the example above, it is not possible to create an "IAnimal" object in the Program class)
+Interface methods do not have a body - the body is provided by the "implement" class
+On implementation of an interface, you must override all of its methods
+Interfaces can contain properties and methods, but not fields/variables
+Interface members are by default abstract and public
+An interface cannot contain a constructor (as it cannot be used to create objects)
+
+Why And When To Use Interfaces?
+1) To achieve security - hide certain details and only show the important details of an object (interface).
+
+2) C# does not support "multiple inheritance" 
+(a class can only inherit from one base class).
+ However, it can be achieved with interfaces, because the class can implement multiple interfaces.
+
+
+
+
+
+
+SSO
+
+void Session_Start(object sender, EventArgs e)
+        {
+            Logger logger = new Logger();
+            logger.LogMessage("Creating Session for User- " + User.Identity.Name);
+            SessionManager.CreateUserSession(User.Identity.Name);
+            
+            
+        }
+		
+public class SessionManager
+    {
+        public static void CreateUserSession(string ClientWindowsId)
+        {
+            Logger logger = new Logger();
+            UserProfile user = new UserProfile();
+            AuthenticationService authenticationManager = new AuthenticationService();
+            string userId = ClientWindowsId.Contains("\\") ? ClientWindowsId.Split(new String[] { "\\" }, StringSplitOptions.None)[1] : ClientWindowsId;
+            string domain = ClientWindowsId.Contains("\\") ? ClientWindowsId.Split(new String[] { "\\" }, StringSplitOptions.None)[0] : "INS";
+            logger.LogMessage("User Id: " + userId);
+            logger.LogMessage("Domain: " + domain);
+            user = authenticationManager.GetUserDetails(domain, userId);
+            HttpContext.Current.Session.Add("UserApplicationRole", user.UserApplicationRole);
+            HttpContext.Current.Session.Add("FirstName", user.FirstName);
+            HttpContext.Current.Session.Add("LastName", user.Lastname);
+            HttpContext.Current.Session.Add("MiddleName", user.MiddleName);
+            HttpContext.Current.Session.Add("DisplayName", user.UserDisplayName);            
+        }
+}
+
+public UserProfile GetUserDetails(string Domain, string UserId)
+        {
+            var user = new UserProfile();
+            Logger logger = new Logger();
+
+            try
+            {
+
+                using (HostingEnvironment.Impersonate())
+                {
+                    
+                    //Find Users from a Domain
+                    PrincipalContext AD = new PrincipalContext(ContextType.Domain, Domain);
+                    UserPrincipal u = new UserPrincipal(AD);
+                    u.SamAccountName = UserId; //For Finding a Particular user
+                    PrincipalSearcher search = new PrincipalSearcher(u);
+
+                    foreach (UserPrincipal result in search.FindAll())
+                    {
+                        
+                        if (result != null)
+                        {
+                            
+                            DirectoryEntry de = result.GetUnderlyingObject() as DirectoryEntry;
+                            if (de.Properties["samAccountName"].Value.ToString() == UserId)
+                            {
+                                
+                                user.FirstName = de.Properties["givenName"].Value.ToString();
+                                user.Lastname = de.Properties["sn"].Value.ToString();
+                                user.FunctionalRole = de.Properties["Role"].Value != null ? de.Properties["LION-MonitorRole"].Value.ToString() : string.Empty;
+                                user.Email = de.Properties["mail"].Value.ToString();
+                                user.SAMAccountName = de.Properties["samAccountName"].Value.ToString();
+                                user.UsrPrincipalName = de.Properties["userPrincipalName"].Value.ToString();
+                                user.UserDisplayName = de.Properties["displayName"].Value.ToString();
+                            }
+                        }
+                    }
+                }
+                user.UserApplicationRole = getMappedApplicationRole(user.FunctionalRole);
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex, ex.InnerException);
+                Console.Write(ex.Message);
+                throw;
+
+            }
+
+            return user;
+
+        }
+
+
+
+Test Methods
+
+NUnit:
+
+Features: NUnit is one of the oldest .NET unit testing frameworks. It provides a rich set of features for writing and executing unit tests, including support for parameterized tests, assertions, setup/teardown methods, parallel test execution, and more.
+Attributes-Based: NUnit uses attributes extensively to define test fixtures, setup methods, test methods, and assertions.
+Community Support: It has a large community and active development, which means good support and regular updates.
+Compatibility: It supports .NET Framework, .NET Core, and .NET 5/6.
+
+xUnit:
+
+Simplicity and Convention Over Configuration: xUnit follows the principle of simplicity and embraces convention over configuration. It encourages a minimalistic approach to testing.
+Attributes-Based: Similar to NUnit, xUnit also uses attributes for defining test methods and assertions but with a different naming convention ([Fact], [Theory], etc.).
+Parallel Test Execution: xUnit inherently supports parallel test execution, making it suitable for high-performance testing scenarios.
+.NET Core and .NET 5/6 Focus: xUnit is known for its compatibility and alignment with newer versions of .NET, especially .NET Core and .NET 5/6.
+
+[TestMethod] substitute [Fact]
+If parametized test, then use [Theory] and to pass parameter use [InllineData(2, 3, -2)] on below of [Theory].
+
+
+MSTest (Microsoft Unit Testing Framework):
+
+Integrated with Visual Studio: MSTest is the default unit testing framework provided by Microsoft and is integrated with Visual Studio.
+Attributes-Based: It uses attributes like [TestMethod], [TestClass], etc., for defining test methods and test classes.
+Limited Features: Historically, MSTest had fewer features compared to NUnit or xUnit, but Microsoft has been adding more features and enhancements in recent updates.
+Compatibility: It supports .NET Framework and .NET Core.
+
+Key Considerations:
+
+Community Adoption: NUnit and xUnit have a more extensive community and are popular in open-source projects. MSTest is commonly used in projects where Visual Studio is the primary IDE.
+Features and Flexibility: NUnit and xUnit generally offer more features, flexibility, and extensibility compared to MSTest.
+Preference and Ecosystem: Choosing between these frameworks often comes down to personal/team preference, existing ecosystem, and specific project needs.
+
+
+
+Static vs Non Static Class
+
+Instance: A static class cannot be instantiated using the “new” keyword, while a normal class can.
+
+Members: A static class can only contain static members, while a normal class can contain both static and instance members.
+
+Inheritance: A static class cannot be inherited by other classes, while a normal class can be inherited.
+
+Accessibility: A static class can only be accessed through its static members, while a normal class can be accessed through both its static and instance members.
+
+Use cases: Static classes are typically used to hold utility methods and other functionality that is not specific to a particular instance of an object. On the other hand, normal classes are used to represent objects that have a specific state and behavior.
+
+
+
+Enums
+
+Enums are defined using the enum keyword followed by the name of the enum. Inside the enum block, you list the individual named constants without assigning values explicitly. By default, they are assigned integral values starting from 0.
+
+Assigning Specific Values to Enums:
+public enum DaysOfWeek
+{
+    Monday = 1,
+    Tuesday = 2,
+    // ...
+}
+Using Enums:
+
+DaysOfWeek today = DaysOfWeek.Monday; // Assigning enum value
+if (today == DaysOfWeek.Monday)      // Comparing enum values
+{
+    Console.WriteLine("Today is Monday");
+}
+By default, enums in C# are of type int, but you can use other integral types like byte, short, long, etc.,
+
+Enums are commonly used in switch statements to perform different actions based on the enum value:
+
+switch (today)
+{
+    case DaysOfWeek.Monday:
+        // Do something for Monday
+        break;
+    case DaysOfWeek.Tuesday:
+        // Do something for Tuesday
+        break;
+    // ...
+}
+Enums provide a more readable and maintainable way to work with a set of related constant values, especially when dealing with options or states within your code
+
+
+
+Design Pattern
+
+Creational Design Patterns:
+
+Singleton Pattern: Ensures a class has only one instance and provides a global point of access to that instance.
+Factory Method Pattern: Defines an interface for creating objects but lets subclasses decide which class to instantiate.
+Abstract Factory Pattern: Provides an interface to create families of related or dependent objects without specifying their concrete classes.
+
+Structural Design Patterns:
+Adapter Pattern: Allows incompatible interfaces to work together by providing a bridge between them.
+Decorator Pattern: Adds new functionality to an object dynamically without altering its structure.
+Composite Pattern: Composes objects into tree structures to represent part-whole hierarchies.
+Facade Pattern: Provides a unified interface to a set of interfaces in a subsystem.
+
+Behavioral Design Patterns:
+Observer Pattern: Defines a one-to-many dependency between objects, where changes in one object trigger updates in other dependent objects.
+Strategy Pattern: Defines a family of algorithms, encapsulates each one, and makes them interchangeable.
+Command Pattern: Encapsulates a request as an object, thereby allowing for parameterization of clients with queues, requests, and operations.
+Iterator Pattern: Provides a way to access the elements of an aggregate object sequentially without exposing its underlying representation.
+MVC  is also one kind of design pattern.
+
+Implementing Design Patterns in C#:
+C# provides a rich set of features that facilitate the implementation of design patterns:
+Interfaces and Abstract Classes: Used to define contracts and common behaviour.
+Inheritance and Polymorphism: Allows for reuse and substitution of objects.
+Delegates and Events: Support for implementing Observer and other behavioural patterns.
+Generics: Help in creating reusable components and collections.
+
+
+Bin vs Obj Folder
+
+Bin vs Obj Folder in C# | C# Interview Questions | Csharp Interview Questions and Answers
+
+ 
+Key Differences:
+Output: bin contains the final compiled output used for deployment, while obj contains intermediate build artifacts and is not used for deployment.
+Contents: bin holds the compiled binaries and necessary files, whereas obj contains intermediate files like object files, debug symbols, etc., generated during the build process.
+Deployment: Only the contents of the bin folder are used for deployment or running the application.
+Cleanliness: Deleting the obj folder and rebuilding the project is often a troubleshooting step for resolving build issues or to ensure a clean build.
+
+During development, it's common for the obj and bin folders to be ignored in version control systems (such as Git) by including them in the project's .gitignore file to prevent committing unnecessary generated files. These folders are typically recreated during the build process.
+
+Finally
+
+A finally block enables you to clean up actions that are performed in a try block. If present, the finally block executes last, after the try block and any matched catch block. A finally block always runs, whether an exception is thrown or a catch block matching the exception type is found.
+
+finally Block:
+Purpose: finally is a block used in exception handling to ensure that a certain block of code is executed, regardless of whether an exception is thrown or not.
+Usage: It's part of a try-catch-finally structure. Code within the finally block will always execute, even if an exception is thrown or caught.
+Typical Use: It's often used to release resources, close open connections, or perform cleanup operations that need to happen regardless of whether an exception occurs.
+
+
+Can you describe your experience with .Net core and how it relates to your project requirements?
+In my previous roles, particularly at Techlens Global and Infosys Limited, I have gained extensive experience with .NET Core, which is crucial for the Senior Software Engineer position at H&M. At Techlens Global, I developed over 300 REST APIs using C# and .NET Core 6.0, ensuring that the backend was robust and scalable. This involved implementing the SOLID principles to maintain clean and efficient code, which is essential for any enterprise application. Additionally, I utilized LINQ for data querying, which enhanced the performance of the applications I worked on.
+
+My role at Infosys involved building an automated ticketing tool that integrated with Microsoft Exchange Server, which required a deep understanding of .NET technologies. I implemented CI/CD pipelines using Azure DevOps, which aligns with H&M's focus on modern DevOps practices. This experience has equipped me with the skills to design and maintain scalable applications, ensuring they meet both functional and non-functional requirements.
+
+Moreover, I have a solid foundation in performance tuning and memory optimization within .NET Core, which is vital for developing high-performance applications. I am familiar with debugging and profiling tools that help identify bottlenecks, ensuring that the applications run efficiently under load. This aligns well with your requirement for someone who can tune system performance and manage memory effectively.
+
+In summary, my hands-on experience with .NET Core, coupled with my understanding of best practices in software development, positions me well to contribute to H&M's projects. I am excited about the opportunity to leverage my skills in a collaborative environment and help build modern, scalable applications that meet the needs of your organization.
+
+Have you implemented CI/CD pipeline in your previous projects?
+Implementing CI/CD pipelines has been a critical part of my development process in previous roles, particularly at Infosys Limited and Infogain Limited. At Infosys, I was responsible for setting up a CI/CD pipeline on Azure DevOps for an automated ticketing tool project. This involved creating build and release pipelines that automated the entire process from code commit to deployment. I established branch policies to ensure that only code that passed all tests could be merged into the main branch, which significantly improved code quality and reduced deployment risks.
+
+I utilized Azure DevOps to integrate automated testing into the pipeline, ensuring that unit tests were executed with every build. This approach not only helped in identifying issues early but also ensured that the codebase remained stable throughout the development lifecycle. The CI/CD pipeline also included deployment to a staging environment, where further integration testing was performed before moving to production.
+
+At Infogain, I worked with Jenkins to manage CI/CD processes for a project involving React and Node.js. I configured Jenkins jobs to automate the building, testing, and deployment of applications, which streamlined our workflow and reduced manual errors. The integration of automated tests using Jest and Enzyme ensured that we maintained high code coverage and reliability.
+
+In both roles, I emphasized the importance of continuous integration and delivery as a means to enhance collaboration among team members and improve overall productivity. By automating repetitive tasks, we were able to focus more on developing features and less on deployment issues. I believe that my experience with CI/CD aligns well with H&M's commitment to secure DevOps practices and intelligent automation, and I am eager to bring this expertise to your team.
+
+What strategies do you use for performance tuning in .Net applications?
+Performance tuning in .NET applications is a multi-faceted approach that I have employed in various projects, particularly during my tenure at Techlens Global and Infosys Limited. One of the primary strategies I utilize involves profiling the application to identify bottlenecks. Tools like Visual Studio Profiler and JetBrains dotTrace have been invaluable in pinpointing areas of the code that consume excessive resources or take too long to execute.
+
+At Techlens Global, I developed a highly scalable application where performance was critical. I implemented caching strategies using in-memory caching and distributed caching with Redis, which significantly reduced database load and improved response times for frequently accessed data. This approach not only enhanced performance but also provided a better user experience.
+
+Another strategy I employ is optimizing database queries. During my time at Techlens, I utilized LINQ and SQL Server to ensure that queries were efficient. I analyzed execution plans and made necessary adjustments, such as adding indexes and optimizing stored procedures, to enhance data retrieval times.
+
+In addition to these strategies, I focus on asynchronous programming to improve the responsiveness of applications. By using async and await in .NET, I can ensure that the application remains responsive while performing I/O-bound operations, which is crucial for web applications that handle multiple requests simultaneously.
+
+Lastly, I believe in conducting regular load testing to simulate real-world usage scenarios. This helps in understanding how the application behaves under stress and allows for proactive adjustments before deployment. By combining these strategies, I have consistently delivered applications that not only meet functional requirements but also perform exceptionally well under various conditions. I am excited about the opportunity to apply these performance tuning techniques at H&M, ensuring that the applications we build are both high-performing and reliable.
+
+Can you discuss your experience with microservices architecture  and its benefits? 
+My experience with microservices architecture has been substantial, particularly during my time at Infogain Limited, where I migrated previous .NET projects into a microservices framework. This transition was driven by the need for scalability, maintainability, and improved deployment processes. Microservices architecture allows for the development of independent services that can be deployed and scaled individually, which is a significant advantage over monolithic architectures.
+
+In my role, I designed microservices that handled specific business functionalities, which enabled our team to work on different services simultaneously without impacting one another. This independence not only accelerated our development cycles but also improved the overall resilience of the application. For instance, if one service experienced issues, it did not bring down the entire application, allowing for better uptime and reliability.
+
+I also leveraged containerization technologies like Docker to package microservices, which simplified deployment and scaling. By deploying services in containers, we could easily manage dependencies and ensure consistency across different environments. This approach aligns well with H&M's focus on cloud-native solutions and microservices, as it enhances the agility of the development process.
+
+Another benefit of microservices architecture is the ability to use different technologies for different services. For example, while I primarily worked with .NET Core for backend services, I could incorporate other technologies as needed, allowing for flexibility and optimization based on specific service requirements.
+
+Moreover, microservices facilitate continuous delivery and integration practices. With independent services, we can deploy updates to one service without affecting others, which aligns perfectly with the CI/CD practices I have implemented in my previous roles. This capability is crucial for maintaining a competitive edge in fast-paced environments like retail.
+
+In summary, my experience with microservices architecture has equipped me with the skills to design scalable, resilient, and maintainable applications. I am eager to bring this expertise to H&M, contributing to the development of innovative solutions that enhance customer experiences and drive business success.
+
+
+
+
+
+
+ 
+ 
+ 
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+		1. Authorization  	Done
+		Authentications 	Done
+		CORS	Done
+		HTTPS v HTTP	Done
+		Linq	Done
+		Asynchronous v Synchronous	Done
+		Routing	Done
+		Dependency Injection	Done
+		HTTP Methods	Done
+		bin v obj folder	Done
+		Const vs ReadOnly	Done
+		Access modifier	Done
+		How to restrict your Api from public use	Done
+		SSO	Done
+		Inverse Property	Done
+		BearerToken 	Done
+		OOPS Concept	Done
+		Static v non static class	Done
+		Abstract	Done
+		Interface	Done
+		Exception handling	Done
+		Web Api v Rest Api v Soap Api	Done
+		Middleware	
+		Bad Request	
+		IEnnuemrable v Iqueryable	Done
+		Solid Principle	Done
+		Enums	Done
+		ViewData v Viewbag	
+		Design Patterns	Done
+		Automapper	
+		Generic Collection	
+		Inverse Property	Done
+		Sql Injection	
+		Entity Framework	
+		String and string builder	
+		Dispose and finalize	
+		Exception Handling	
+		Swap two number without temp	
+		OOADP(Object-Oriented Analysis and Design Principles)	
+		Ajax Call	
+		Readme file	
+		gitignore file	
+		dll file	
+		Yaml file	
+		WCF	
+		WPF	
+		Miocroservices	
+		Loosely coupled and tightly coupled services	
+		N-tier architecture	
+		Solutions based upon SaaS using RESTful APIs and Web Services	
+		Unit Tests	Done
+		Version controls	
+		CCOM	
+		JSOM	
+		Delegates	
+	
+	
+	
+	
+	🔑 1. Cross-Platform
+		• .NET Framework → Only runs on Windows.
+		• .NET Core → Runs on Windows, Linux, and macOS.
+		• Huge advantage for cloud-native and containerized applications.
+	
+	🔑 2. Performance & Scalability
+		• .NET Core is much faster than .NET Framework (thanks to Kestrel web server, JIT optimizations, Span<T>, async improvements).
+		• Benchmarks (TechEmpower) show ASP.NET Core among the top performing web frameworks.
+	
+	🔑 3. Modern Development & Cloud-Native Ready
+		• Built with microservices, Docker, Kubernetes, and cloud deployments in mind.
+		• Works well with containerization (small, self-contained deployments).
+		• Integrates natively with Azure, AWS, and GCP.
+	
+	🔑 4. Side-by-Side Versioning
+		• With .NET Framework, the runtime is tied to Windows and upgrading can break existing apps.
+		• With .NET Core, each app can use its own runtime version (no “DLL Hell”).
+	
+	🔑 5. Open Source & Community Driven
+		• .NET Core is fully open source (hosted on GitHub under .NET Foundation).
+		• Faster innovation, contributions from Microsoft + community.
+	
+	🔑 6. Unified Development Platform
+		• With .NET 5+ (which came after .NET Core 3.1), Microsoft unified .NET Core, Xamarin, and .NET Framework into a single platform.
+		• You can build web, desktop, mobile, cloud, IoT, and AI apps with the same base libraries.
+	
+	🔑 7. Modular & Lightweight
+		• .NET Core uses NuGet-based modular libraries.
+		• You don’t have to ship the whole .NET Framework, just what you need.
+		• Smaller deployment size = faster startup and less overhead in containers.
+	
+	🔑 8. Cross-Platform Tooling (CLI & VS Code Support)
+		• Comes with a command-line interface (CLI) for building, running, and publishing apps (dotnet build, dotnet run, dotnet publish).
+		• Works well with Visual Studio Code, not just Visual Studio.
+	
+	
+	“.NET Core is cross-platform, open source, and high-performance, while .NET Framework only runs on Windows. It supports side-by-side versioning, is cloud-native ready, works great with containers, and provides modern CLI tooling. It’s also modular and lightweight, which makes deployments smaller and faster. In short, .NET Core gives more flexibility, performance, and modern development capabilities compared to .NET Framework.”
+	
+	
+	
+	How would you handle a scenario where two Micro-services need to communicate with each other in a secure, efficient manner?
+	
+	What is the role of 'Entity Framework' in .NET development? Also, how you can handle concurrency in it?
+	
+
+
