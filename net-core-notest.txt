@@ -870,6 +870,17 @@ In summary, my experience with microservices architecture has equipped me with t
 	How would you handle a scenario where two Micro-services need to communicate with each other in a secure, efficient manner?
 	
 	What is the role of 'Entity Framework' in .NET development? Also, how you can handle concurrency in it?
+
+What is boxing and unboxing?
+	-	Boxing means converting a value type to a reference type.
+	-	Unboxing means converting a reference type to a value type.
+	-	Also since value type is stored in stack, while boxing, it copies the value from the stack and store it in the heap , returning the reference.
+	-	While unboxing , value is copied from heap to a stack.
+
+What are fluent api?
+Difference between isInclude and hasInclude?
+Difference between and is and has?
+For application like uber or ola, give me a example when can we use encapsulation?
 	
 
 
