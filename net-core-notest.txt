@@ -3,7 +3,49 @@
 	It can work with both .NET Core and .net framework via the .NET standard framework.
 	It is best suitable for developing cloud-based such as web applications, mobile applications, and IoT applications.
 
-2. Feauture of Asp.Net Core?
+
+Comparisons between .Net Framework 4.8 and .Net 8:
+
+1. Optimized JIT(Just-In-Time) compilation meaning
+	-	Generates more optimized machine code
+	-	Supports tiered compilation meaning initially uses a quick, less optimized version of code to start, then reJIT hot parts with heavy 		optimized code later.
+	-	Adapts to workload behaviour at runtime.
+	Benifits: faster execution over time.
+
+2. Cross p
+
+
+How .net core is more modular than .net framework?
+	-	.NET Core is more modular than the .NET Framework because it’s built around the idea of small, independent, versionable components, 		instead of one large, monolithic framework.
+		In .NET Framework, most of the base class libraries were bundled together and installed system-wide, which meant you always got the 		whole framework — even if your app only needed a small part of it.
+		In .NET Core, everything is distributed as NuGet packages. You can reference only what you need, and each application can bring its 		own versions of runtime and libraries. There’s no Global Assembly Cache (GAC), so dependencies are app-local and isolated.
+		This modular approach also enables side-by-side versioning, cross-platform runtime packs, and smaller, self-contained deployments.
+		In short, .NET Core’s modularity gives you more flexibility, less bloat, and fewer version conflicts.
+
+		For example, ASP.NET Core uses a modular middleware pipeline — you only add features like routing, authentication, or static files if 		you need them. This is very different from the old System.Web in .NET Framework, which was tightly coupled and loaded everything by 		default.
+
+Side By Side Versioning:
+	-	Side-by-side versioning means that multiple versions of the same runtime or library can coexist on the same machine, and different 			applications can use different versions independently — without interfering with each other.
+		eg. Let’s say:
+			App A was built on .NET Core 3.1
+			App B was built on .NET 8.0
+			Both can run on the same computer at the same time.
+			Each one uses its own runtime — either system-wide or included in its self-contained deployment.
+
+Types of deployment in .Net:
+	FDD(Framework Dependent Deployment) most in .net framework.
+		Only your app and its unique dependencies are published. The system must have a compatible runtime.
+		Command : dotnet publish -c Release
+	SCD(Self Contained Deployment) in .net core.
+		Publish your app plus the runtime and all framework libraries. Runs Independently.
+		Command: dotnet publish -c Release -r win-x64 --self-contained true
+		Disadvantage: 
+			Updates to .net requires re-publishing your app.
+			Larger deployment size(since the runtime is included)
+
+
+
+Feauture of Asp.Net Core?
 	It has good support for asynchronous programming.
 	Multiple hosting ways are supported.
 	Built in support for Dependency Injection.
@@ -11,8 +53,6 @@
 	There is no Global.asax file. We can now register and use the services in the startup class
 	Support WebSocket and SignalR
 	Provide protection against CSRF (Cross-Site Request Forgery)
-
-3. 
 
 
 web.config  ko replace kiya appsettings.json
