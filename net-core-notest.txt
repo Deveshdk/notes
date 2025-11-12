@@ -12,7 +12,12 @@ Comparisons between .Net Framework 4.8 and .Net 8:
 	-	Adapts to workload behaviour at runtime.
 	Benifits: faster execution over time.
 
-2. Cross p
+2. Cross platform, modular & lightweight
+3. Span<T> & Memory Efficiency
+4. Improved Garbage Collector
+5. Ahead-of-Time(AoT)compilation
+6. Kestrel web server
+7. Modern language and runtime features
 
 
 How .net core is more modular than .net framework?
