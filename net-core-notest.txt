@@ -929,3 +929,7 @@ For application like uber or ola, give me a example when can we use encapsulatio
 	
 
 
+| Type                                     | Description                                                                                              | Requires .NET Installed? | Typical Command                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------ |
+| **Framework-dependent deployment (FDD)** | Only your app and its unique dependencies are published. The system must have a compatible .NET runtime. | ✅ Yes                    | `dotnet publish -c Release`                                  |
+| **Self-contained deployment (SCD)**      | Publishes your app **plus** the runtime and all framework libraries. Runs independently.                 | ❌ No                     | `dotnet publish -c Release -r win-x64 --self-contained true` |

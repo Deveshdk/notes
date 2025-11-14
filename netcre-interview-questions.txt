@@ -1,0 +1,1605 @@
+
+	1. How does microservice implemented and what is orchestration and which design patter we can use for it.
+	
+		• orchestration usually refers to automating the management, coordination, and organization of complex systems, services, or workflows.
+		• Eg. Container orchestration(Docker) 
+		• Managing containers across multiple machines
+		• Ensures container start stop scale and recover automatically.
+		• Example: Kubernetes
+		• Automation means automating one task.
+		• Orchestration means automating multiple task into a bigger process.
+		• Eg. Deploy app -> configure database -> start services -> scale when needed
+
+	2. Which design pattern you used to migrate monolith to microservice architecture in your project?
+		“We primarily used the Strangler Fig pattern for gradually migrating our monolith into microservices. We also introduced an API Gateway to manage routing between legacy and new services, and followed business capability decomposition to decide service boundaries. Over time, we moved towards database-per-service and used event-driven communication (Sagas) to handle cross-service workflows.”
+		
+		Strangler Fig pattern : 
+		 
+		○ Idea: Build new microservices around the edges of the monolith, and slowly "strangle" parts of the old system until the monolith is gone.
+		○ Example: Instead of rewriting everything, move one module (say, User Management) into a microservice and route calls there. Over time, replace more modules.
+	
+		Decomposition pattern:
+		
+		• By Business Capability – each service owns one business function (like Payments, Orders, Inventory).
+		• By Subdomain (DDD) – split by bounded contexts from Domain-Driven Design.
+		
+		API Gateway pattern:
+		
+		• Acts as the single entry point for clients.
+		• Routes requests to either the monolith (for old functionality) or microservices (for new functionality).
+		• Helps avoid breaking the client when you’re halfway through migration.
+		
+		
+		Database per service pattern:
+		
+		• Monolith usually has one big shared database.
+		• In microservices, each service should own its own schema.
+		• Migration is usually step-by-step (sometimes starting with schema separation or change data capture (CDC)).
+		
+		Event Driven(Saga/ CQRS)
+		
+		• When splitting services, you often need asynchronous communication.
+		• Saga pattern helps manage distributed transactions across services.
+		• CQRS (Command Query Responsibility Segregation) separates reads from writes, making it easier to scale and evolve services.
+	
+
+	3. If you are making 1million request call cal for one endpoint how do you scale it.
+
+		• Load Balancing
+			§ Put a load balancer (NGINX, HAProxy, AWS ELB, GCP Load Balancer) in front.
+			§ Distribute traffic across multiple app instances.
+			§ Allows horizontal scaling (adding more servers/pods as needed).
+		• Horizontal Scaling(Stateless Service)
+			§ Deploy multiple instances of your service (Kubernetes, Docker Swarm, ECS).
+			§ Ensure your service is stateless (so any instance can handle any request).
+			§ Use auto-scaling rules (scale out on CPU/RAM/requests per second).
+			
+		• Caching
+			§ Response Caching (CDN like Cloudflare, AWS CloudFront, Akamai) for static/less dynamic results.
+			§ In-Memory Caching (Redis, Memcached) for frequently accessed data.
+			§ Reduces DB load dramatically.
+	
+		○ Database Scaling
+			§ For reads → use read replicas (SQL) or sharding (NoSQL).
+			§ For writes → ensure batching, queueing, or event streaming (Kafka, RabbitMQ).
+			§ Avoid making the DB the bottleneck.
+			
+		○ Asynchronous Processing
+			§ If the endpoint triggers heavy tasks (e.g., report generation, ML inference), don’t block the request.
+			§ Instead:
+				□ Accept the request.
+				□ Push the job to a message queue (Kafka, RabbitMQ, SQS).
+				□ Process asynchronously.
+				□ Return quickly with a 202 Accepted.
+			
+		○ Rate Limiting & Throttling
+			§ Protect services with API Gateway rate limiting.
+			§ Prevent a flood of requests from overwhelming the backend.
+	
+		○ Observability
+			§ Add metrics (Prometheus, Grafana) to monitor RPS, latency, error rates.
+			§ Enable logging + tracing (ELK, OpenTelemetry, Jaeger).
+			§ Allows you to detect scaling issues early.
+		
+		
+	4. How does indexing works and which algorithm it uses.
+		○ When you create an index (e.g., CREATE INDEX idx_name ON Users(Email);)
+			§ The DB builds a separate data structure (the index).
+			§ The index stores the column values plus pointers to the actual rows in the table.
+		○ When you query (SELECT * FROM Users WHERE Email = 'abc@test.com';)
+			○ Instead of scanning the full table, the DB looks up the value in the index.
+			○ The index quickly finds the row location (row ID, page number, etc.) and retrieves it.
+	
+	
+	5. How higher order components work with example.
+
+	6. How to store you credentials using hashing.
+		Using hashing we encrypt our sensitive information into a hash map. Why can never be decrypted.
+		It holds data integrity and keeps data safe.
+		Algorithm that it uses SHA256 & SHA512
+
+	7. What is middleware?
+
+Middleware class use in real time
+	We create extension methods for middleware to make them easier to use and provide a clean, fluent API. A middleware class contains a constructor with RequestDelegate next and an InvokeAsync(HttpContext context) method where we write pre-processing, call _next(context) to continue the pipeline, and then post-processing logic. For example, in my last project I created a Global Exception Handling middleware that caught unhandled exceptions, logged them, and returned a structured error response.”
+
+	8. How to create a custom middleware its syntax.
+
+		○ Logging Requests & Responses
+		○ Global Exception Handling
+		○ Adding Security Headers
+		○ Rate Limiting / Throttling
+		○ Custom Authentication Logic
+	
+	
+	In Program.cs
+	var builder = WebApplication.CreateBuilder(args);
+	var app = builder.Build();
+	
+	app.UseGlobalExceptionHandling(); // 👈 easy to add
+	
+	app.MapGet("/", () => throw new Exception("Boom!"));
+	
+	app.Run();
+	
+	
+	// extension method
+	public static class ExceptionHandlingMiddlewareExtensions
+	{
+	    public static IApplicationBuilder UseGlobalExceptionHandling(this IApplicationBuilder builder)
+	    {
+	        return builder.UseMiddleware<ExceptionHandlingMiddleware>();
+	    }
+	}
+	
+	
+	
+	public class ExceptionHandlingMiddleware
+	{
+	    private readonly RequestDelegate _next;
+	    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+	
+	    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+	    {
+	        _next = next;
+	        _logger = logger;
+	    }
+	
+	    public async Task InvokeAsync(HttpContext context)
+	    {
+	        try
+	        {
+	            // Call next middleware in pipeline
+	            await _next(context);
+	        }
+	        catch (Exception ex)
+	        {
+	            // Log the exception
+	            _logger.LogError(ex, "Unhandled exception occurred");
+	
+	            // Return friendly error response
+	            context.Response.StatusCode = 500;
+	            context.Response.ContentType = "application/json";
+	            await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new
+	            {
+	                StatusCode = 500,
+	                Message = "An unexpected error occurred. Please try again later."
+	            }));
+	        }
+	    }
+	}
+
+
+
+
+	9. What is Delegate?
+	
+	- A delegate in C# is a type-safe function pointer that holds a reference to a method with a specific signature. It allows us to pass methods as parameters, supports callbacks, multicasting, and is the foundation of events. For example, in ASP.NET Core, RequestDelegate is a delegate used in middleware to represent the next step in the pipeline.”
+	• A delegate is a type-safe function pointer in C#.
+	• It holds a reference to one or more methods with a specific signature and return type.
+	• Think of it as a way to pass methods as parameters.
+	
+	Eg . 
+	public class Program
+	{
+	    public static void PrintMessage(string msg)
+	    {
+	        Console.WriteLine("Message: " + msg);
+	    }
+	
+	    public static void Main()
+	    {
+	        MyDelegate del = new MyDelegate(PrintMessage); // assign method
+	        del("Hello, World!"); // invoke delegate
+	    }
+	}
+
+
+Why Do We Use Delegates?
+	1. Flexibility (Pass Methods Around)
+		○ Can pass methods as parameters (strategy pattern).
+	2. Callback Mechanisms
+		○ Example: Event handling, async operations.
+	3. Multicasting
+		○ One delegate can call multiple methods.
+	4. Event Handling
+		• Delegates are the foundation of events in C#.
+
+
+Types of Delegates
+	1. Single-Cast Delegate → points to one method.
+	2. Multi-Cast Delegate → can point to multiple methods (using +=).
+
+using System;
+
+namespace MulticastDelegateDemo
+{
+    // 1️⃣ Define a delegate type
+    public delegate void NotifyDelegate(string message);
+
+    class Program
+    {
+        // 2️⃣ Define some methods with the same signature
+        static void SendEmail(string message)
+        {
+            Console.WriteLine($"📧 Email sent: {message}");
+        }
+
+        static void SendSMS(string message)
+        {
+            Console.WriteLine($"📱 SMS sent: {message}");
+        }
+
+        static void LogToFile(string message)
+        {
+            Console.WriteLine($"🗒️ Logged: {message}");
+        }
+
+        static void Main()
+        {
+            // 3️⃣ Create delegate instances
+            NotifyDelegate notify1 = SendEmail;
+            NotifyDelegate notify2 = SendSMS;
+            NotifyDelegate notify3 = LogToFile;
+
+            // 4️⃣ Combine them into a multicast delegate
+            NotifyDelegate allNotifiers = notify1 + notify2 + notify3;
+
+            // 5️⃣ Invoke it — calls all three methods in order
+            allNotifiers("System update completed!");
+
+            // 6️⃣ You can remove one if you want
+            allNotifiers -= SendSMS;
+
+            Console.WriteLine("\nAfter removing SMS:");
+            allNotifiers("System reboot scheduled.");
+        }
+    }
+}
+
+
+🧩 Key Points
+Concept	Explanation
++ / +=	Adds a method to the delegate’s invocation list
+- / -=	Removes a method
+Invocation order	Methods are called in the order they were added
+Return values	If delegate returns a value, only the last method’s return value is used
+Thread-safe	Delegate combination/removal operations are atomic
+
+
+
+	11. How have you implemented solid principles in your last project.
+	
+		• S → Single Responsibility Principle (one class = one reason to change)
+		• O → Open/Closed Principle (open for extension, closed for modification)
+		• L → Liskov Substitution Principle (subtypes must work as base types)
+		• I → Interface Segregation Principle (don’t force clients to depend on unused methods)
+		• D → Dependency Inversion Principle (depend on abstractions, not concretions)
+
+
+	🔹 1. Liskov Substitution Principle (LSP)
+	👉 Focus: Correct inheritance hierarchy.
+	👉 Rule: Subtypes must be substitutable for their base types without breaking behavior.
+	Example:
+	
+	public abstract class Bird
+{
+    public abstract void Move();
+}
+	public class Sparrow : Bird
+{
+    public override void Move() => Console.WriteLine("Sparrow flies");
+}
+	public class Ostrich : Bird
+{
+    public override void Move() => Console.WriteLine("Ostrich runs");
+}
+	✅ Both Sparrow and Ostrich respect the Bird.Move() contract → LSP followed.
+	❌ If Ostrich threw NotImplementedException in Fly(), that would violate LSP.
+	🔑 In summary: LSP ensures inheritance doesn’t break polymorphism.
+	
+	🔹 2. Dependency Inversion Principle (DIP)
+	👉 Focus: Correct dependencies between high-level and low-level modules.
+	👉 Rule: High-level modules should depend on abstractions, not concrete implementations.
+	Example:
+	❌ Bad (tight coupling):
+	
+	public class FileLogger
+{
+    public void Log(string message) => Console.WriteLine("File: " + message);
+}
+	public class OrderService
+{
+    private FileLogger _logger = new FileLogger(); // tightly coupled
+	public void PlaceOrder()
+    {
+        _logger.Log("Order placed.");
+    }
+}
+	✔️ Good (DIP applied with abstraction + DI):
+	
+	public interface ILogger
+{
+    void Log(string message);
+}
+	public class FileLogger : ILogger
+{
+    public void Log(string message) => Console.WriteLine("File: " + message);
+}
+	public class OrderService
+{
+    private readonly ILogger _logger;
+    public OrderService(ILogger logger) => _logger = logger;
+	public void PlaceOrder()
+    {
+        _logger.Log("Order placed.");
+    }
+}
+	Now OrderService depends on abstraction (ILogger), not a specific class → easier to extend (e.g., DatabaseLogger, ConsoleLogger).
+	
+
+
+	12. How many types of dependency injection how it works with example.
+		• Dependency Injection is a design pattern where an object (class) gets the objects it depends on (dependencies) from outside, instead of creating them itself.
+		
+		• Use Transient → when the service is lightweight & stateless.
+		• Use Scoped → for business logic, repositories, DbContext.
+		• Use Singleton → for heavy objects, configuration, caching, logging.
+
+
+	13. What is async await.
+
+
+	14. What is hashing and how it works.
+
+	- Hashing = creating a fixed-size fingerprint of data.
+	- We use it for fast lookups, data integrity, password storage, cryptography, and load balancing.
+	- Same input → always same hash.
+
+	Fast Data Lookup (Hash Tables / Hash Maps)
+		• Hashing is the backbone of HashMap / Dictionary in programming.
+		• Instead of searching through all items (O(n)), the hash function maps a key directly to an index in constant time (O(1)).
+	Data Integrity / Verification
+		• Hashing ensures data wasn’t changed during transmission or storage.
+		• Example: When you download a file, sites often provide an MD5 / SHA checksum. You hash your file → if it matches → file is intact.
+	Password Storage (Security)
+		• We never store passwords in plain text. Instead:
+			○ Password → hash function → hashed value stored in DB.
+			○ When logging in, hash the entered password → compare with stored hash.
+		• With salt + hashing, even same passwords generate different hashes.
+	
+	Load Balancing & Distributed Systems
+		• Hashing helps in consistent hashing, which decides how to distribute data across servers (used in CDNs, databases, distributed caches like Redis, Cassandra).
+	
+	Common Hashing Algorithms
+		• MD5 → fast but broken (collisions).
+		• SHA-1 → better but considered insecure now.
+		• SHA-256 / SHA-512 → widely used, secure.
+		• bcrypt, scrypt, Argon2 → designed specifically for password hashing.
+	
+
+Hashing Vs Encryption vs Encoding
+
+	- Hashing: Like taking a fingerprint. You can verify identity, but can’t recreate the person from the fingerprint.
+	- Encryption: Like locking data in a safe. Anyone with the right key can unlock it.
+	- Encoding: Like translating text into Morse code or QR code. Anyone can decode it; it’s not meant to be secret.
+
+
+
+14.
+	
+	
+	
+	🔹 Abstract vs Virtual in C#
+	Feature	Abstract	Virtual
+	Definition	A method declared in an abstract class without implementation.	A method in a base class with a default implementation, but can be overridden.
+	Implementation Required?	Yes – Must be overridden in a derived (non-abstract) class.	No – Overriding is optional.
+	Base Class Type	Only allowed inside an abstract class.	Can exist in any class (abstract or concrete).
+	Polymorphism	Enforces polymorphism (child must provide its own implementation).	Supports polymorphism (child may override behavior).
+	Default Implementation	❌ No default implementation.	✅ Has a default implementation.
+	Usage Scenario	Use when you want to force all derived classes to implement the method.	Use when you want to provide a default behavior but allow overriding if needed.
+	
+
+
+
+
+	15. Why Use Generics?
+	• Type Safety – Errors are caught at compile-time instead of runtime.
+	• Reusability – Write code once and use it with many types.
+	• Performance – Avoids boxing/unboxing when working with value types.
+	• Clarity – Makes APIs easier to use by explicitly declaring the type.
+
+Syntax Basics
+Generic Class
+
+public class Box<T>
+{
+    private T _value;
+public Box(T value)
+    {
+        _value = value;
+    }
+public T GetValue()
+    {
+        return _value;
+    }
+}
+Usage:
+
+var intBox = new Box<int>(123);
+Console.WriteLine(intBox.GetValue()); // 123
+var strBox = new Box<string>("Hello");
+Console.WriteLine(strBox.GetValue()); // Hello
+
+Generic Method
+
+public class Utils
+{
+    public static void Print<T>(T item)
+    {
+        Console.WriteLine(item);
+    }
+}
+Usage:
+
+Utils.Print<int>(10);
+Utils.Print("Generics are powerful!");
+
+Generic Interface
+
+public interface IRepository<T>
+{
+    void Add(T item);
+    T Get(int id);
+}
+
+Constraints
+You can restrict what kinds of types can be used with generics using constraints:
+
+public class Factory<T> where T : new()
+{
+    public T Create()
+    {
+        return new T(); // works only if T has a parameterless constructor
+    }
+}
+Common constraints:
+	• where T : struct → value type only
+	• where T : class → reference type only
+	• where T : new() → must have a parameterless constructor
+	• where T : BaseClass → must inherit from BaseClass
+	• where T : IInterface → must implement IInterface
+
+Built-in Generic Types in .NET
+	• Collections: List<T>, Dictionary<TKey, TValue>, Queue<T>, Stack<T>
+	• Delegates: Func<T>, Action<T>, Predicate<T>
+	• Nullable<T>: allows value types to be null
+
+✅ In short: Generics allow you to write flexible, reusable, and type-safe code in C#.
+
+
+
+
+In SQL Server, a function is a stored program (like in programming languages) that performs a calculation, operation, or formatting, and then returns a value.
+
+	15. 🔹 Types of Functions in SQL Server
+	1. System Functions
+		○ Built-in by SQL Server.
+		○ Examples:
+
+SELECT GETDATE();         -- returns current date & time
+SELECT LEN('Hello');      -- returns 5
+SELECT UPPER('hello');    -- returns HELLO
+	
+	2. User-Defined Functions (UDFs)
+	You can create your own functions.
+	They must return a value and cannot change data (no INSERT/UPDATE/DELETE).
+	There are two main types:
+	a) Scalar Functions
+		○ Return a single value (string, number, date, etc.).
+	Example:
+	
+	CREATE FUNCTION dbo.GetFullName(@FirstName NVARCHAR(50), @LastName NVARCHAR(50))
+RETURNS NVARCHAR(100)
+AS
+BEGIN
+    RETURN @FirstName + ' ' + @LastName
+END;
+	Usage:
+	
+	SELECT dbo.GetFullName('John', 'Doe'); 
+-- Output: John Doe
+	
+	b) Table-Valued Functions (TVFs)
+		○ Return a table that you can use like a normal table in SELECT.
+	Example:
+	
+	CREATE FUNCTION dbo.GetEmployeesByDept(@DeptId INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT Id, Name, Salary
+    FROM Employees
+    WHERE DepartmentId = @DeptId
+);
+	Usage:
+	
+	SELECT * FROM dbo.GetEmployeesByDept(2);
+	
+	🔑 Key Points About Functions
+		○ Must return a value (scalar or table).
+		○ Cannot modify database state (unlike stored procedures).
+		○ Can be reused inside queries (SELECT, WHERE, JOIN, etc.).
+		○ Improve readability and reusability.
+	
+	
+	
+	🔹 Stored Procedure (SP)
+		○ Does not have to return a value (but can return output parameters or result sets).
+		○ Can modify data (INSERT, UPDATE, DELETE).
+		○ More powerful → can use transactions, exception handling, loops, etc.
+		○ Cannot be used directly inside SELECT or WHERE.
+	
+	
+	
+	16. NOLOCK
+	SELECT * 
+	FROM Employees WITH (NOLOCK);
+	This means:
+	
+	Your SELECT will not block other writes.
+	
+	Your query won’t wait if another transaction is inserting/updating data.
+	
+	🔹 Benefits of NOLOCK
+	Faster reads (no blocking).
+	
+	Useful in reporting queries where you don’t want to wait for locks.
+	
+	🔹 Problems with NOLOCK
+	It can cause dirty reads (reading uncommitted data). For example:
+	
+	You might read rows that are being inserted/updated but not committed yet.
+	
+	You might miss rows.
+	
+	You might read the same row twice.
+	
+	🔹 Dirty Read Example
+	Transaction 1:
+	
+	sql
+	Copy code
+	BEGIN TRAN
+	UPDATE Employees SET Salary = 5000 WHERE Id = 1;
+	-- not committed yet
+	Transaction 2 (with NOLOCK):
+	
+	sql
+	Copy code
+	SELECT Salary FROM Employees WITH (NOLOCK) WHERE Id = 1;
+	You might see the updated salary (5000) before commit.
+	
+	If Transaction 1 rolls back, your query read a wrong value.
+	
+	🔑 In Short
+	NOLOCK = Read without locking / wait-free reads.
+	
+	Pros: faster, no blocking.
+	
+	Cons: risk of dirty reads, duplicate rows, missing rows.
+	
+	👉 Best practice:
+	Use NOLOCK only for reporting or analytics queries where absolute accuracy is not critical.
+	
+
+	16. So the 5 types of generics in C# are:
+
+		Generic Classes
+		
+		Generic Methods
+		
+		Generic Interfaces
+		
+		Generic Delegates
+		
+		Generic Constraints
+
+
+	17. Clustered vs non clustered
+
+	18. A pipe is a utility function that lets you compose multiple functions together, passing the output of one as the input of the next.
+		Example:
+		
+		const pipe = (...fns) => (value) =>
+  fns.reduce((acc, fn) => fn(acc), value);₹
+		// functions
+const double = x => x * 2;
+const square = x => x * x;
+		// usage in React
+const result = pipe(double, square)(3); // (3*2)=6 -> (6*6)=36
+		
+
+
+
+
+
+🔹 How to Force Garbage Collection
+You can use the GC class from System:
+
+using System;
+class Program
+{
+    static void Main()
+    {
+        // Create some objects
+        for (int i = 0; i < 1000; i++)
+        {
+            var obj = new object();
+        }
+// Force garbage collection
+        GC.Collect();              // Forces garbage collection
+        GC.WaitForPendingFinalizers(); // Waits for finalizers to run
+        GC.Collect();              // Collect again to clean up finalized objects
+Console.WriteLine("Garbage collection enforced.");
+    }
+}
+
+🔹 What the Calls Do
+	1. GC.Collect()
+Forces immediate garbage collection for all generations (0, 1, 2).
+	2. GC.WaitForPendingFinalizers()
+Waits for finalizers (~destructors) of collected objects to finish running.
+	3. (Optional) Another GC.Collect()
+Cleans up objects that were waiting for finalization.
+
+🔹 When (Not) to Use It
+✅ Good for:
+	• Unit tests (checking if finalizers are called).
+	• Memory profiling.
+	• Cleaning up before a critical operation (e.g., starting a heavy workload).
+❌ Avoid in production code:
+	• It hurts performance (forcing GC may pause the application).
+	• The runtime already collects efficiently when needed.
+
+✅ In short:
+You enforce garbage collection in C# with:
+
+GC.Collect();
+GC.WaitForPendingFinalizers();
+
+
+
+
+
+
+🔹 What is Finalize?
+	• Finalize is a special method used by the Garbage Collector (GC) to clean up unmanaged resources before an object is destroyed.
+	• It is like a destructor in C++.
+	• You don’t call it directly — the GC calls it automatically when it reclaims memory for an object.
+
+🔹 How to Use Finalize
+In C#, you declare a finalizer using the destructor syntax (~ClassName).
+Example:
+
+class MyClass
+{
+    // Finalizer
+    ~MyClass()
+    {
+        Console.WriteLine("Finalize called - cleaning up resources!");
+    }
+}
+When MyClass is no longer referenced and GC runs, Finalize is called before memory is reclaimed.
+
+🔹 Important Points
+	1. Not deterministic
+You don’t know when (or if) Finalize will be called — only when GC decides to collect.
+	2. Performance overhead
+Objects with finalizers take longer to collect, because GC puts them in a finalization queue first.
+	3. Shouldn’t be used for managed resources
+Managed resources (like string, List<T>, etc.) are handled by GC.
+Finalize is only needed for unmanaged resources (file handles, database connections, sockets, etc.).
+
+🔹 Best Practice → Use IDisposable instead
+Instead of relying on Finalize, C# recommends the Dispose Pattern with IDisposable.
+This gives you deterministic cleanup.
+Example:
+
+class MyClass : IDisposable
+{
+    // Destructor (Finalizer)
+    ~MyClass()
+    {
+        Dispose(false);
+    }
+public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this); // Prevent finalizer call
+    }
+protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Free managed resources
+        }
+        // Free unmanaged resources
+    }
+}
+
+🔹 Summary
+	• Finalize = method called by GC before reclaiming an object.
+	• Implemented with ~ClassName() syntax.
+	• Used for unmanaged resource cleanup.
+	• Not deterministic → you don’t control when it runs.
+	• Best practice: use IDisposable with Dispose() instead of relying only on finalizers.
+
+
+
+
+Feature	Finalize	Dispose
+Purpose	Cleanup unmanaged resources before GC destroys object.	Cleanup unmanaged (and optionally managed) resources deterministically.
+How to implement	Destructor syntax: ~ClassName()	Implement IDisposable.Dispose()
+Called by	Garbage Collector (automatically, at some unknown time).	User code explicitly (obj.Dispose()) or using statement.
+Deterministic?	❌ No (you don’t know when GC will call it).	✅ Yes (runs immediately when you call it).
+Performance	Slower (object must go through finalization queue).	Faster (you control when cleanup happens).
+Suppression	You can’t call Finalize directly.	Can suppress finalization via GC.SuppressFinalize(this).
+Common Use Case	As a backup cleanup mechanism if Dispose is not called.	Main way to release unmanaged resources (files, DB connections, sockets).
+Best Practice	Avoid unless absolutely needed.	Always implement if class holds unmanaged resources.
+
+
+
+Difference between createRef and useRef
+
+Feature	createRef	useRef
+Component Type	Class components	Functional components
+Ref Persistence	New ref object on every render	Same ref object across renders
+Re-renders	Not reused	Persistent, does not trigger re-render
+Use Cases	Mostly DOM access in class-based components	DOM access + storing mutable values (e.g., counters, timers) in functional components
+
+
+Feature	string (Immutable)	StringBuilder (Mutable)
+Mutability	Immutable (new object every change)	Mutable (changes in place)
+Performance	Slow for many modifications	Fast for many modifications
+Memory Usage	Higher (creates new copies)	Lower (reuses same buffer)
+Namespace	System	System.Text
+Best For	Small text, few changes	Large text, frequent changes
+
+
+
+🔹 Struct vs Class
+Feature	struct (Value Type)	class (Reference Type)
+Storage	Stack (usually)	Heap
+Copy Behavior	Copies entire value	Copies reference (points to same object)
+Inheritance	No inheritance (only interfaces)	Supports full inheritance
+Nullability	Cannot be null (unless Nullable<T> or T?)	Can be null
+Performance	Better for small objects	Better for complex, large objects
+Default Constructor	Auto-provided only	Can define your own
+
+
+🔹 When to Use struct
+Use a struct when:
+	1. Small, lightweight data
+		○ Example: Coordinates, sizes, colors.
+
+public struct Point { public int X, Y; }
+Point p = new Point { X = 10, Y = 20 };
+	2. Immutability (often recommended for structs)
+		○ Best if the data represents a single value (like DateTime, Guid, decimal).
+	3. High performance scenarios
+		○ Value types are stored on the stack (in most cases) → faster allocation & deallocation.
+		○ Example: In game development, structs are used for vectors, physics calculations where millions of small objects are created.
+	4. No inheritance needed
+		○ Structs can implement interfaces but cannot inherit classes.
+		○ Use them when you don’t need polymorphism.
+
+
+🔹 Stack Memory
+	• Stores:
+		○ Value types (like int, float, struct),
+		○ Method/function calls,
+		○ Local variables (with fixed lifetime).
+	• Managed automatically with LIFO (Last In, First Out).
+	• Very fast allocation & deallocation.
+	• Scope-limited: once a method finishes, its stack frame is destroyed and variables are gone.
+👉 Example:
+
+void Test()
+{
+    int x = 42;   // Stored in stack
+    int y = x;    // Copy created, separate value
+}
+Here, x and y are on the stack, and y gets its own copy of the value.
+
+🔹 Heap Memory
+	• Stores:
+		○ Reference types (like class, object, string, arrays).
+	• Managed by the Garbage Collector (GC).
+	• More flexible, but slower than stack.
+	• Data stays in heap until no references point to it anymore, then GC cleans it up.
+👉 Example:
+
+class Person { public string Name; }
+void Test()
+{
+    Person p1 = new Person(); // Object stored in heap
+    p1.Name = "Alice";
+Person p2 = p1;  // Both p1 and p2 point to the same heap object
+    p2.Name = "Bob";
+Console.WriteLine(p1.Name); // "Bob"
+}
+Here:
+	• p1 and p2 are references (stack).
+	• The actual Person object is in the heap.
+
+🔹 Key Differences
+Feature	Stack Memory	Heap Memory
+Type Stored	Value types, method calls, local variables	Reference types, objects, arrays
+Allocation	Fast (LIFO)	Slower (managed by GC)
+Lifetime	Until method ends (auto-cleaned)	Until no references remain (GC cleanup)
+Size	Small, fixed size (limited by OS)	Larger, flexible
+Access	Direct, fast	Indirect (via reference), slower
+Example	int x = 10;	var obj = new Person();
+
+🔹 Visual Example
+
+struct Point { public int X, Y; }
+class Person { public string Name; }
+void Run()
+{
+    // Stack (value type)
+    Point p1 = new Point { X = 5, Y = 10 }; // Stored in stack
+// Heap (reference type)
+    Person person1 = new Person { Name = "Alice" }; // Heap object
+}
+	• p1 (struct) → lives on stack.
+	• person1 (reference) → reference lives on stack, actual Person object lives on heap.
+
+✅ In short:
+	• Stack = fast, small, stores value types & function calls, auto-cleared.
+	• Heap = larger, slower, stores reference types, managed by GC.
+
+
+
+1. Clustered Index
+	• Definition: A clustered index determines the physical order of data in a table. The table’s rows are stored in the same order as the index.
+	• Key Points:
+		○ There can be only one clustered index per table (because the data can be physically sorted in only one way).
+		○ Accessing data via the clustered index is very fast because the data is already sorted.
+		○ Often created on primary keys.
+	• Example: If you have a table of employees and a clustered index on EmployeeID, the rows will be physically stored in EmployeeID order.
+Visual:
+
+Clustered Index on EmployeeID
+[101] -> [102] -> [103] -> [104]
+(Data stored in the same order)
+
+2. Non-Clustered Index
+	• Definition: A non-clustered index creates a separate structure from the table, which points to the actual data rows.
+	• Key Points:
+		○ You can have many non-clustered indexes on a table.
+		○ The data itself is not sorted in the order of the non-clustered index.
+		○ Good for queries that filter or sort on columns other than the primary key.
+	• Example: If you have a non-clustered index on LastName, it contains the LastName and a pointer to the actual row.
+Visual:
+
+Non-Clustered Index on LastName
+[Aaron] -> pointer to row 103
+[Baker] -> pointer to row 101
+[Clark] -> pointer to row 102
+(Data stored elsewhere)
+
+3. Key Differences at a Glance
+Feature	Clustered Index	Non-Clustered Index
+Physical Order of Data	Yes	No
+Number per Table	1	Multiple
+Storage	Data is stored in index order	Separate from data
+Speed for Range Queries	Fast	Slower
+Use Case	Primary keys, frequently sorted	Columns often searched/filtered
+
+💡 Tip: Think of a clustered index as the table itself sorted, and a non-clustered index as a “table of contents” pointing to the actual data.
+
+
+
+
+1. Backend Pagination
+Pagination is usually handled in the backend by limiting the number of results returned per request. Common approaches:
+a) Using SQL LIMIT and OFFSET (MySQL/PostgreSQL)
+
+-- Page 2, 10 items per page
+SELECT * FROM users
+ORDER BY id
+LIMIT 10 OFFSET 10;
+	• LIMIT → Number of items per page.
+	• OFFSET → Number of items to skip (calculated as (page - 1) * pageSize).
+Pros: Simple to implement.
+Cons: Large offsets can be slow on huge datasets.
+
+b) Using Keyset Pagination (Better for Large Tables)
+
+-- Get 10 users after id 50
+SELECT * FROM users
+WHERE id > 50
+ORDER BY id
+LIMIT 10;
+	• Avoids OFFSET and is more efficient for large datasets.
+	• Requires a unique, sequential column (like id or timestamp).
+
+c) Backend Response Format
+The API should ideally return:
+
+{
+  "data": [ ...items... ],
+  "page": 2,
+  "pageSize": 10,
+  "totalPages": 5,
+  "totalItems": 45
+}
+This gives the frontend enough info to display pagination controls.
+
+2. Frontend Pagination
+a) Client-Side (All Data Loaded)
+	• Fetch all data once and paginate in the browser.
+	• Simple for small datasets.
+
+const pageSize = 10;
+const currentPage = 2;
+const paginatedData = allData.slice((currentPage-1)*pageSize, currentPage*pageSize);
+Pros: No repeated server requests.
+Cons: Not suitable for large datasets.
+
+b) Server-Side (Recommended for Large Data)
+	• Fetch only the required page from backend each time.
+
+async function fetchPage(page) {
+  const res = await fetch(`/api/users?page=${page}&pageSize=10`);
+  const data = await res.json();
+  return data;
+}
+	• Update pagination controls based on totalPages from the response.
+
+c) Frontend Controls
+	• Previous / Next buttons
+	• Page numbers (1, 2, 3…)
+	• Optional: Infinite scroll (load next page on scroll)
+
+3. Best Practices
+	1. Always limit number of items per page to avoid overloading the server.
+	2. Use indexes on columns used for pagination (id, created_at) for speed.
+	3. Return total count in API response if possible, for better UX.
+	4. For huge datasets, prefer keyset pagination over OFFSET.
+
+
+
+
+🔹 Types of Filters
+ASP.NET Core provides several types of filters. Each runs at a different stage:
+Filter Type	Purpose	Interface(s)	Example Use Case
+Authorization Filters	Run first. Check if the user is authorized before entering controller/action.	IAuthorizationFilter, IAsyncAuthorizationFilter	Prevent unauthorized access.
+Resource Filters	Run before model binding and after the rest of the pipeline. Useful for caching, short-circuiting requests.	IResourceFilter, IAsyncResourceFilter	Response caching, performance logging.
+Action Filters	Run before and after action method execution.	IActionFilter, IAsyncActionFilter	Logging, input validation.
+Exception Filters	Run if an unhandled exception occurs in an action or filter.	IExceptionFilter, IAsyncExceptionFilter	Global error handling for controllers.
+Result Filters	Run before and after the execution of the action result (e.g., View rendering or JSON serialization).	IResultFilter, IAsyncResultFilter	Modifying response headers, formatting.
+
+
+🔹 Example Scenarios
+Use Case	Better With	Why
+Logging every request/response	Middleware	Applies globally, before routing
+Global error handling	Middleware	Catches everything, not just MVC
+Serving static files	Middleware	Outside MVC
+Authentication	Middleware	Needed before MVC runs
+Authorization per action	Filter	Depends on action/controller attributes
+Action parameter validation	Filter	Middleware can’t see action params
+Modifying the returned IActionResult	Filter	Middleware can’t see MVC result objects
+Caching per action result	Filter	Specific to action outputs
+
+🔹 How They Work Together
+Think of it like this:
+
+Request
+   ↓
+[Middleware pipeline: logging, auth, exception handler, etc.]
+   ↓
+➡️ MVC Routing (request matches a controller/action)
+   ↓
+[Filters pipeline: Authorization → Resource → Action → Exception → Result]
+   ↓
+Controller Action executes
+   ↓
+[Filters post-processing]
+   ↓
+(Response generated)
+   ↓
+[Middleware post-processing]
+   ↓
+Response sent to client
+
+✅ In summary:
+	• Use middleware for global, framework-level concerns.
+	• Use filters for MVC-specific, action/controller-level logic.
+	• They don’t replace each other — they complement each other at different levels of the pipeline.
+
+
+🔹 What is Controller Short-Circuiting?
+In ASP.NET Core MVC, controller short-circuiting means stopping the normal execution pipeline (filters → controller action → result) and directly producing a response earlier.
+This prevents the controller action from running at all. It’s like saying:
+	“I already know what the response should be, so don’t bother executing the action method.”
+
+🔹 Where Short-Circuiting Can Happen
+	1. Authorization Filters
+		○ If the user is not authorized, the filter can set a result (e.g., UnauthorizedResult) without calling the controller.
+		○ Example: [Authorize] attribute.
+
+public void OnAuthorization(AuthorizationFilterContext context)
+{
+    if (!context.HttpContext.User.Identity.IsAuthenticated)
+    {
+        context.Result = new UnauthorizedResult(); // Short-circuits
+    }
+}
+
+➝ Controller action will not run.
+
+	1. Resource Filters
+		○ Run before model binding and before action filters.
+		○ Can short-circuit if resource is already available (e.g., from cache).
+
+public class CacheResourceFilter : IResourceFilter
+{
+    public void OnResourceExecuting(ResourceExecutingContext context)
+    {
+        // Suppose response is already cached
+        context.Result = new ContentResult
+        {
+            Content = "Cached response"
+        }; // Short-circuits controller
+    }
+
+public void OnResourceExecuted(ResourceExecutedContext context) { }
+}
+
+	1. Action Filters
+		○ Less common, but possible.
+		○ You can assign context.Result in OnActionExecuting to skip the controller.
+
+public void OnActionExecuting(ActionExecutingContext context)
+{
+    if (!context.ModelState.IsValid)
+    {
+        context.Result = new BadRequestObjectResult(context.ModelState); 
+        // Short-circuits controller
+    }
+}
+
+🔹 How the Short-Circuit Works Internally
+	• All filters (Authorization → Resource → Action → Exception → Result) run inside the MVC pipeline.
+	• When a filter sets context.Result, the remaining pipeline is skipped:
+		○ Controller action is not invoked.
+		○ Later filters may or may not run, depending on type (e.g., Result Filters may still execute because they wrap result execution).
+
+🔹 Example Flow with Short-Circuit
+Normal flow:
+
+Request → Middleware → Routing → Auth Filter → Resource Filter → Action Filter → Controller Action → Result Filter → Response
+Short-circuit flow (e.g., user unauthorized):
+
+Request → Middleware → Routing → Auth Filter [sets UnauthorizedResult] → Result Filter → Response
+
+
+
+🔹 Event
+	• An event is a wrapper around a delegate.
+	• It follows the publisher-subscriber pattern:
+		○ Publisher defines an event.
+		○ Subscribers attach event handlers (delegates).
+		○ When the event is raised, all subscribers are notified.
+⚠️ Events ensure encapsulation — only the class that owns the event can raise it, while others can only subscribe/unsubscribe.
+Example
+
+public class Button
+{
+    // Define delegate type for event handlers
+    public delegate void ClickHandler(string message);
+// Define event based on delegate
+    public event ClickHandler OnClick;
+public void Click()
+    {
+        Console.WriteLine("Button clicked!");
+        OnClick?.Invoke("User clicked the button"); // Raise event
+    }
+}
+public class Program
+{
+    public static void Main()
+    {
+        var button = new Button();
+// Subscribe event handlers
+        button.OnClick += msg => Console.WriteLine($"Handler 1: {msg}");
+        button.OnClick += msg => Console.WriteLine($"Handler 2: {msg}");
+// Trigger event
+        button.Click();
+    }
+}
+Output:
+
+Button clicked!
+Handler 1: User clicked the button
+Handler 2: User clicked the button
+
+🔹 Delegate vs Event (Key Differences)
+Aspect	Delegate	Event
+Definition	Type-safe function pointer	Encapsulated delegate, used for notifications
+Access	Can be invoked directly by anyone holding reference	Only the declaring class can invoke (Invoke()), others can only subscribe/unsubscribe
+Usage	Callback, strategy pattern, passing methods around	Publish-subscribe pattern (button clicks, data changes, etc.)
+Multicast	Can point to multiple methods	Same, but controlled (only publisher can raise)
+
+1. Value Type (by semantics)
+	• Definition: A type where variables hold the actual data (value).
+	• Stored on the stack (in most cases, though sometimes inlined inside objects on the heap).
+	• Assignment → makes a copy of the value.
+	• Equality (==) → compares the values (structural comparison).
+Examples:
+	• Built-in primitives: int, double, bool, char
+	• User-defined structs:
+
+struct Point {
+    public int X;
+    public int Y;
+}
+Behavior:
+
+int a = 5;
+int b = a;  // b gets a copy
+b = 10;
+Console.WriteLine(a); // 5 (unchanged)
+
+2. Reference Type (by semantics)
+	• Definition: A type where variables hold a reference (pointer) to the actual object, not the object itself.
+	• Always stored on the heap (reference stored on stack).
+	• Assignment → copies the reference, so two variables can point to the same object.
+	• Equality (==) → by default compares references (unless overridden with .Equals).
+Examples:
+	• class types
+	• string (special case — immutable but still a reference type)
+	• Arrays
+	• Delegates
+Behavior:
+
+class Person { public string Name; }
+var p1 = new Person { Name = "Alice" };
+var p2 = p1; // both point to the same object
+p2.Name = "Bob";
+Console.WriteLine(p1.Name); // Bob (changed)
+
+3. “Semantic” Aspect
+When people say “semantic value type” or “semantic reference type”, they usually mean:
+	• Semantic Value Type: The intended meaning is that equality and assignment should be based on values (not identity).
+		○ Example: DateTime, decimal, Point.
+		○ Even if you put two separate DateTime instances in memory, if they represent the same point in time, they are considered “equal.”
+	• Semantic Reference Type: The intended meaning is that equality and assignment should be based on identity (reference).
+		○ Example: Person, Car, Order.
+		○ Two different Person objects with identical properties are still different people (different objects).
+
+✅ Quick Analogy
+	• Value type semantics: Like comparing two numbers on paper — if both are “5,” they’re equal.
+	• Reference type semantics: Like comparing two houses — even if they look identical, they are not the same house unless they’re the same physical address.
+
+
+Explain Api Versioning
+
+🔑 Ways API Versioning Works
+1. URI Path Versioning (most common)
+You include the version in the URL:
+
+/api/v1/products
+/api/v2/products
+Pros ✅:
+	• Clear and explicit
+	• Easy for clients to understand
+Cons ❌:
+	• Can clutter routes if you have many versions
+	• URL changes even for minor updates
+
+2. Query String Versioning
+Clients specify version in a query parameter:
+
+/api/products?api-version=1.0
+/api/products?api-version=2.0
+Pros ✅:
+	• Keeps base URL stable
+	• Easy to add programmatically
+Cons ❌:
+	• Not as visible in docs
+	• Caching proxies may treat it differently
+
+3. Header Versioning
+Version is passed in a custom header:
+
+GET /api/products
+api-version: 1.0
+Pros ✅:
+	• Keeps URL clean
+	• Allows flexible version negotiation
+Cons ❌:
+	• Harder to test manually (e.g., in browser)
+	• Requires clients to set headers explicitly
+
+4. Content Negotiation (Media Type Versioning)
+Version is embedded in the Accept header:
+
+Accept: application/json; version=1.0
+Accept: application/vnd.myapi+json; version=2.0
+Pros ✅:
+	• Elegant for REST purists
+	• Works well with content negotiation
+Cons ❌:
+	• More complex for clients to implement
+
+⚙️ API Versioning in ASP.NET Core
+You can use the official package:
+
+dotnet add package Microsoft.AspNetCore.Mvc.Versioning
+
+Example setup in Program.cs:
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true; // Adds API version headers to responses
+});
+Controller example:
+
+[ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+public class ProductsController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult GetV1() => Ok("Products v1");
+[HttpGet, MapToApiVersion("2.0")]
+    public IActionResult GetV2() => Ok("Products v2 with more details");
+}
+
+Strategy	Example	Pros	Cons	When to Use
+URI Path Versioning	/api/v1/products	- Clear & explicit	- URL changes for every version	Public APIs, client-facing APIs where clarity matters
+		- Easy to test & document	- Can clutter routes with many versions
+		- Works well with caching
+Query String Versioning	/api/products?api-version=1.0	- Keeps base URL stable	- Less visible in docs	Internal APIs, quick versioning without URL changes
+		- Simple to add programmatically	- Some caching proxies ignore query params
+Header Versioning	api-version: 1.0	- Clean URLs	- Harder to test in browser	Enterprise/internal APIs, APIs consumed by custom clients
+		- Flexible version negotiation	- Requires client changes for headers
+Media Type (Content Negotiation)	Accept: application/vnd.myapi+json; version=2.0	- RESTful & elegant	- More complex setup	APIs with multiple response formats, strict REST purists
+		- Fits well with content negotiation	- Harder for casual consumers
+
+• GetV1() has no [MapToApiVersion], so it defaults to all declared versions (1.0 and 2.0).
+• GetV2() has [MapToApiVersion("2.0")], so it will only respond to version 2.0 requests.
+
+
+
+
+
+Step By Step Deployment process
+
+*“In my last project, we used GitHub for version control and Jenkins for CI/CD. Whenever we merged code into the main branch, Jenkins would trigger a build pipeline. The pipeline would install dependencies, run tests, and create a production build of the React app using npm run build. This build was then packaged into a Docker image and tagged with a unique version (build number or Git commit hash). The image was pushed to our container registry.
+For deployment, we had a Jenkins job where we could choose the image tag, and Jenkins would update the dev Kubernetes environment using that image. Once the new version was deployed, we validated it in the dev environment. We also had a dashboard application that showed which image tags were currently deployed for each service across environments. This process ensured traceability and smooth deployments.
+In short, the React app was built → containerized → pushed to registry → and deployed via Jenkins into Kubernetes.”*
+
+
+🔎 Traceability Tools
+1. Jira (by Atlassian)
+	• Used for requirement → development → testing → deployment traceability.
+	• Links user stories, commits, builds, and test cases.
+2. Azure DevOps
+	• Provides work item → code → build → release traceability.
+	• Great for end-to-end DevOps pipelines with reporting dashboards.
+3. GitHub / GitLab / Bitbucket Pipelines
+	• Commit history tied to issues/PRs.
+	• CI/CD pipelines linked to commits.
+	• Shows which commit triggered a build and deployment.
+4. Jenkins with Plugins
+	• Not a traceability tool by itself, but with plugins (like Build Pipeline, Blue Ocean, or custom dashboards) it can provide traceability of builds → artifacts → deployments.
+5. SonarQube
+	• Provides traceability in terms of code quality and security issues.
+	• Links issues to specific commits and branches.
+6. Service Catalog / Deployment Dashboards (like the “Metro” app you mentioned)
+	• Internal dashboards that show:
+		○ Which services are deployed
+		○ Which image tags/versions are running
+		○ In which environment (Dev, QA, Prod)
+7. Test Management Tools (for QA traceability)
+	• TestRail, Zephyr, HP ALM → link requirements → test cases → defects → deployments.
+
+
+“Traceability tools help us know what version of code is deployed in which environment and link requirements to code and tests. Common tools include Jira for requirement-to-code traceability, Azure DevOps for full lifecycle tracking, GitHub/GitLab for commit and pipeline traceability, and SonarQube for code quality. In my last project, we also used an internal dashboard (like Metro) that showed all our services with their deployed image tags per environment, which made deployment traceability very easy.”
+
+
+
+✅ Why Docker is Preferred
+	1. Portability → “Works on my machine” problem solved.
+		○ Container runs the same everywhere (laptop, dev, cloud).
+	2. Resource Efficiency
+		○ Containers use fewer resources than VMs (no full OS per app).
+	3. Faster Startup & Scaling
+		○ Containers start in seconds vs minutes for VMs.
+	4. Isolation
+		○ Each app runs in its own container, avoiding dependency conflicts.
+	5. DevOps & CI/CD Friendly
+		○ Easy integration with Jenkins, Kubernetes, GitHub Actions.
+	6. Microservices Ready
+		○ Perfect for modern architectures where each microservice is containerized and deployed independently.
+
+
+
+
+🔹 What is Blue-Green Deployment?
+Blue-Green deployment is a release management strategy where you maintain two identical environments:
+	• Blue (current live/production) → running the stable version.
+	• Green (new version) → where you deploy and test the new release.
+👉 Once the green environment is tested and verified, you switch traffic (usually via load balancer, DNS, or API Gateway) from Blue to Green.
+
+🔑 Benefits
+	• Zero downtime deployment → users don’t see outages.
+	• Easy rollback → if something fails in Green, switch back to Blue.
+	• Safe testing in production-like environment.
+
+🔹 How It Works in .NET / C# Context
+Imagine you have an ASP.NET Core API or Blazor app:
+	1. Step 1 – Blue environment (say v1.0) is running in production.
+	2. Step 2 – Deploy new build (v2.0) to the Green environment.
+	3. Step 3 – Run smoke tests, integration tests, and verify logs/metrics on Green.
+	4. Step 4 – Switch the load balancer (e.g., Azure Front Door, AWS ALB, Nginx) to route traffic to Green.
+	5. Step 5 – Blue stays idle (but ready for rollback) until the next release.
+
+🔹 Example in Practice (C# + ASP.NET Core + Azure)
+	• Your app is containerized in Docker.
+	• You run it in Azure App Service or Kubernetes.
+	• You deploy the new version (Green) while Blue is still serving requests.
+	• Once tests pass, you update the App Service slot swap (in Azure, slots = Blue/Green).
+	• Users are now on the new version instantly, no downtime.
+
+🎯 Interview-Ready Answer
+	“Blue-Green deployment is a strategy where we keep two identical environments — Blue (current production) and Green (new release). In .NET, for example, we can deploy a new ASP.NET Core build to the Green environment while Blue continues serving traffic. After testing, we switch traffic to Green, achieving zero downtime. If issues are found, we can roll back quickly by routing traffic back to Blue. This strategy reduces risk and ensures high availability.”
+
+
+
+
+Generics : generics you can say is a type safe data type or placeholder of a data type.
+
+Return Type: what type of value a method returns to a caller
+
+Answer:
+Feature	return	yield return
+Use case	Ends method execution	Used in iterators to return sequence values
+Works with	Any return type	Must return IEnumerable or IEnumerator
+Example	return 5;	yield return i;
+Example:
+
+IEnumerable<int> GetNumbers()
+{
+    for (int i = 1; i <= 3; i++)
+        yield return i;
+}
+Can you overload a method based only on return type? No, for overloading we need method name and parameter 
+Can a method return a object: yes(including custom class, array, interface , delegates and object)
+Can you return null? Yes, Only for nullable value type or reference type
+
+Covariant return types: allows overridden method to return more derived type than the base method
+
+Can a method return an interface or abstract class ? Yes, this allows flexibility and abstractions
+
+What is the return type of async method?
+	Task - if it returns no value
+	Task<T> - if it returns a value
+	Void - only for event handler
+
+ValueTask<T>: it is the lightweight version of Task<T>, used for high performance scenarios
+
+Can you use ref or out without a return type? Yes, 
+Can you return a lambda or delegate from a method? Yes
+
+ What is dynamic return type? Dynamic return type refers type checking until runtime. Complie-time checking is skipped so less-safe.
+
+
+Sp vs Function
+
+What are the challenges you faced during pipeline setup.
+
+“While setting up the CI/CD pipeline for our .NET / Node.js (or any tech stack) project in Azure DevOps (or Jenkins, GitHub Actions, etc.), we encountered several challenges.
+Challenge 1 – Configuration & Secrets Management:
+Initially, each environment had its own hardcoded settings and credentials inside YAML files. This led to security issues and failed deployments when configs were out of sync.
+Solution:
+	• Integrated Azure Key Vault and used variable groups for environment-specific settings.
+	• Implemented parameterized YAML templates for environment reuse.
+	• Applied RBAC and approvals before production release.
+Challenge 2 – Long Build Times:
+Builds were taking over 25 minutes due to repetitive dependency downloads and serial stages.
+Solution:
+	• Used pipeline caching for NuGet / npm dependencies.
+	• Configured parallel jobs for build, test, and code analysis.
+	• Introduced artifact retention policies and version tagging.
+Challenge 3 – Test Integration:
+Test results weren’t reflected in the pipeline, making it hard to track failures.
+Solution:
+	• Added a separate test stage with dotnet test and result publishing.
+	• Configured the pipeline to fail immediately on test errors.
+Outcome:
+	• Reduced build time by ~60%.
+	• Improved reliability — deployments became consistent and auditable.
+	• Strengthened security by removing hardcoded secrets.
+Overall, I learned the value of designing pipelines as modular, parameterized, and environment-agnostic systems right from the start.”
+
+
+
+
+What are the challenges you faced during migration to .net core.
+What is micro frontend
+
+What is deadlock avoidance?
+Deadlock avoidance is a technique used in operating systems and multithreaded applications to ensure a system never enters a deadlock state.
+
+3️⃣ Banker’s Algorithm (Most Famous Example)
+Deadlock avoidance is most commonly implemented using the Banker’s Algorithm, which:
+	• Checks available resources
+	• Checks maximum possible demand of each process
+	• Grants resources only if the system remains safe
+
+Safe state means there is atleast one sequence of execution where process can complete. No deadlock will appear.
+
+
+Examples with c# to avoid deadlock in multithreading:
+
+using System;
+using System.Threading;
+
+class Program
+{
+    private static readonly object lockA = new object();
+    private static readonly object lockB = new object();
+
+    static void Main()
+    {
+        Thread t1 = new Thread(Thread1Work);
+        Thread t2 = new Thread(Thread2Work);
+
+        t1.Start();
+        t2.Start();
+
+        t1.Join();
+        t2.Join();
+
+        Console.WriteLine("Completed without deadlock.");
+    }
+
+    static void Thread1Work()
+    {
+        // Always lock resources in alphabetical/numeric order → A then B
+        lock (lockA)
+        {
+            Console.WriteLine("Thread 1 locked A");
+            Thread.Sleep(100);
+
+            lock (lockB)
+            {
+                Console.WriteLine("Thread 1 locked B");
+            }
+        }
+    }
+
+    static void Thread2Work()
+    {
+        // Same order: A then B → avoids deadlock
+        lock (lockA)
+        {
+            Console.WriteLine("Thread 2 locked A");
+            Thread.Sleep(100);
+
+            lock (lockB)
+            {
+                Console.WriteLine("Thread 2 locked B");
+            }
+        }
+    }
+}
+
+Why this avoids deadlock: beacause bith thread follow the same order, no thread block lockB first resulting no circular waiting can occur.
+
+ In C#, we avoid deadlocks by enforcing a strict lock ordering rule.
+
+How can we achieve multithreading in c#?
+	1. We can create a new thread in main method and start it. Manually create a thread but not recommended for large application.
+	2. Using threadpool(more efficient way)
+		a. ThreadPool.QueueUserWorkItem(state =>{console.writeline("Running in threadpool thread");});
+		b. Reuses system-managed threads
+		c. Ideal for short background task
+	3. Using Tasks
+		a. Using System.Threading.Tasks
+		b. Task.Run(() => { console.writeline("Task running on separate thread"); });
+		c. Modern and recommended
+		d. Supports async/await
+		e. Handles scheduling automatically
+	4. Async/await 
+		async Task GetData()
+		{
+		    var result = await Task.Run(() => 
+		    {
+		        return "Running async task";
+		    });
+		
+		    Console.WriteLine(result);
+		}
+		Keeps UI responsive.
+		Generates background threads automatically
+		Best for I/O operations.
+
+
+
+What is probes? In Kubernates
+
+Probes in kubernetes is health check done by kubelet to know whether a container is healthy, ready to receive traffic or should be restarted.
+
+Types of probes:
+	1. Liveness Probe
+		a. Purpose: checks if your application is running or stuck.
+		b. If it fails: Kubernetes restart the container
+		c. Used for: detecting deadlock, unresponsive apps, frozen process 
+	2. Readiness Probe
+		a. Purpose: Checks if the application is ready to accept request
+		b. It it fails: Kubernetes removes the pod from service load balancer untils its ready again
+		c. Used for: Apps that need time to warm up, slow starting services, database connection inilialization.
+	3. Startup Probe
+		a. Purpose: Don’t perform liveness or readiness checks untill the app fully starts.
+		b. If it fails: Container is restarted.
+
+
+✅ 1. .NET Core Application Probes
+Program.cs sample endpoints
+In a .NET API, you typically expose:
+
+app.MapGet("/health", () => "OK");        // Liveness
+app.MapGet("/ready", () => "READY");      // Readiness
+app.MapGet("/startup", () => "STARTED");  // Startup
+Kubernetes Deployment YAML
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 3
+startupProbe:
+  httpGet:
+    path: /startup
+    port: 80
+  failureThreshold: 30
+  periodSeconds: 10
+👉 Why this is real-world
+.NET Core apps sometimes take time to start (loading configs, EF migrations), so Startup Probe is extremely helpful.
+
+
+
+What is Etype?
+Etype in Active Directory means Encryption type.
+Etype in C# means Enum type which represent a fixed set of named constants.
+
+
+Minimal Api vs Controller
+Contract package for testing
+How will you deploy multi stage in docker
+Copy in context of value type and reference type
+What is blue green deployment
+Semantic Value Type and Semantic Reference Type
+How do you prevent attackers to write any html in your react form
+What is micro frontend
+
+
+
