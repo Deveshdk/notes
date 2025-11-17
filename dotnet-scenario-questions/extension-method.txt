@@ -1,0 +1,65 @@
+Extension methods are a C# feature that lets you add new methods to an existing class without modifying the original class or creating a derived class.
+
+They allow you to “extend” the functionality of any type — even built-in ones like string, int, or third-party classes.
+
+✅ Simple Definition (Interview-Friendly)
+
+Extension methods are static methods that appear to be instance methods on existing types.
+They use the this keyword in the first parameter to specify which type they extend.
+
+✅ Real Example: Extension Method for String
+public static class StringExtensions
+{
+    public static bool IsCapitalized(this string value)
+    {
+        return !string.IsNullOrEmpty(value) && char.IsUpper(value[0]);
+    }
+}
+
+Usage:
+bool result = "Hello".IsCapitalized();   // true
+
+
+Looks like a built-in string method → but it’s your custom method.
+
+✅ Rules (Frequently Asked in Interviews)
+
+Must be inside a static class
+
+Must be a static method
+
+First parameter must have this before the type being extended
+
+Extension methods do not modify the original type
+
+If a class already has a method with the same signature, that one takes priority over the extension method
+
+🔥 Why are extension methods used? (Interview Points)
+
+✔ To add helper/utility methods
+✔ To extend sealed classes (e.g., string, DateTime)
+✔ To keep the code cleaner
+✔ Used heavily in LINQ (e.g., Where(), Select())
+✔ Create reusable functionality across the project
+
+📌 Real Example: Extension Method for List<T>
+public static class ListExtensions
+{
+    public static void PrintAll<T>(this List<T> list)
+    {
+        foreach (var item in list)
+            Console.WriteLine(item);
+    }
+}
+
+
+Usage:
+
+var numbers = new List<int> {1, 2, 3};
+numbers.PrintAll();
+
+💡 Common Interview Question
+❓ Can extension methods override existing methods?
+
+No.
+If the original type has a method with the same name and signature, that method always wins.

@@ -1,0 +1,48 @@
+✅ What is .NET Standard?
+.NET Standard is a specification (not a runtime or framework) that defines a set of common APIs that every .NET platform must implement.
+
+In simple words:
+.NET Standard is a contract that ensures code sharing across different .NET platforms.
+
+If you target .NET Standard, your library can run on:
+    .NET Framework, .NET Core, Xamarin / Mobile, Unity, Mono, UWP
+
+🎯 Why .NET Standard Was Created?
+    Before .NET Standard, platforms had incompatible APIs:
+    .NET Framework had one set
+    .NET Core had another
+    Xamarin had another
+    This made code-sharing difficult.
+
+.NET Standard solved this by providing a unified API surface that all platforms must support.
+
+🎚️ Different Versions of .NET Standard
+Higher versions = more APIs
+But also = fewer platforms support it
+
+Examples:
+.NET Standard Version	Supported By
+1.0 – 1.6	Very basic APIs, wide platform support
+2.0	Most widely used, nearly complete API
+2.1	More APIs, but not supported by .NET Framework
+🌟 Common Interview Example
+
+If you build a class library targeting .NET Standard 2.0, it can run on:
+    .NET Core 2.0+, .NET Framework 4.6.1+, Xamarin, Mono, Unity
+
+💡 Example
+Targeting .NET Standard in a library:
+<TargetFramework>netstandard2.0</TargetFramework>
+
+
+This means:
+Your library uses only APIs defined in .NET Standard 2.0
+Any runtime that implements .NET Standard 2.0 can run your code
+
+🔥 Important Note (For Interviews)
+“.NET Standard is now mostly replaced by .NET 5+ unified platform, but it is still important for cross-platform libraries, especially those needing compatibility with older .NET Core or .NET Framework systems.”
+
+🎤 Interview-Ready Answer (Short Version)
+    “.NET Standard is a specification that defines a common set of APIs for all .NET platforms.
+    It ensures that libraries can be shared across .NET Framework, .NET Core, Xamarin, and other runtimes.
+    It’s not a runtime, but a contract that guarantees compatibility.”

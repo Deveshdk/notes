@@ -1,0 +1,130 @@
+✅ What is SQL Batching?
+
+Batching means sending multiple SQL statements or data rows to the database in a single request instead of one-by-one.
+
+This improves:
+✔ Performance
+✔ Reduced network round trips
+✔ Faster inserts/updates
+✔ Less database overhead
+
+🎯 How Do We Ensure Batching in SQL?
+
+Below are the most common and acceptable answers in interviews:
+
+1️⃣ Using INSERT ... VALUES (...), (...), (...) (Multiple Rows in One Query)
+SQL Server Example:
+INSERT INTO Employees (Name, Age, City)
+VALUES 
+    ('Alex', 30, 'NY'),
+    ('John', 28, 'LA'),
+    ('Maria', 26, 'TX');
+
+
+✔ Fast
+✔ Reduces round trips
+✔ Best for small / medium batches (100–1000 rows)
+
+2️⃣ Using Table-Valued Parameters (TVP) (Recommended for .NET)
+Create a table type:
+CREATE TYPE EmployeeType AS TABLE
+(
+    Name NVARCHAR(100),
+    Age INT,
+    City NVARCHAR(50)
+);
+
+Use it in a stored procedure:
+CREATE PROCEDURE InsertEmployees
+    @Employees EmployeeType READONLY
+AS
+BEGIN
+    INSERT INTO Employees SELECT * FROM @Employees;
+END
+
+
+✔ Best for high-volume inserts
+✔ Only one round trip
+✔ Much faster than looping inserts
+
+3️⃣ Using SQL Bulk Insert / SqlBulkCopy (Very Fast)
+C# Example:
+using (var bulk = new SqlBulkCopy(connection))
+{
+    bulk.DestinationTableName = "Employees";
+    bulk.WriteToServer(dataTable);
+}
+
+
+✔ Ideal for thousands to millions of rows
+✔ Used in ETL processes
+✔ Much faster than normal inserts
+
+4️⃣ Using Stored Procedure Batching
+
+You can send a batch of operations:
+
+BEGIN TRANSACTION
+
+INSERT INTO Orders ...;
+UPDATE Stock ...;
+INSERT INTO OrderLogs ...;
+
+COMMIT;
+
+
+✔ Multiple operations executed as one batch
+✔ Reduces network calls
+✔ Also ensures atomicity (commit/rollback)
+
+5️⃣ Using GO for Splitting Logical Batches (SSMS)
+INSERT INTO Test VALUES (1)
+GO
+INSERT INTO Test VALUES (2)
+GO
+
+
+✔ Helps SQL Server process commands in batches
+✔ Not used inside SPs—only in scripts
+
+6️⃣ Using Application-Level Batching (C#, Java, Python)
+
+Example in C#:
+
+var cmd = connection.CreateCommand();
+cmd.CommandText = @"
+INSERT INTO Logs (Message) VALUES (@msg1);
+INSERT INTO Logs (Message) VALUES (@msg2);
+INSERT INTO Logs (Message) VALUES (@msg3);
+";
+
+cmd.Parameters.AddWithValue("@msg1", "Error 1");
+cmd.Parameters.AddWithValue("@msg2", "Error 2");
+cmd.Parameters.AddWithValue("@msg3", "Error 3");
+
+cmd.ExecuteNonQuery();
+
+
+✔ All inserts run in one database round-trip
+✔ Reduces overhead
+
+🎤 Interview-Ready Answer (Short Version)
+
+“We ensure batching in SQL by grouping multiple operations into a single request instead of sending them one-by-one.
+
+This can be achieved using multi-row INSERT statements, table-valued parameters, SqlBulkCopy for high-volume operations, or batching commands inside stored procedures.
+
+Batching improves performance, reduces network round trips, and significantly increases throughput.”
+
+🎤 Interview-Ready Answer (Advanced Version)
+
+“In SQL Server, batching can be ensured in several ways.
+
+For small batches, we use multi-row INSERT statements.
+For larger batches, we use table-valued parameters or SqlBulkCopy, which can insert thousands of rows in a single call.
+
+In .NET applications, we often construct batched queries or pass a DataTable to a stored procedure.
+
+These approaches reduce network round trips, improve performance, and avoid row-by-row operations which are slow.”
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

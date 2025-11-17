@@ -1,0 +1,131 @@
+How do you handle memory leaks in .net core?
+    1.  In order to find memory leak we will use profiling tool. eg. dotMemory, PerfView and Visual Studio Diagnostic Tools etc
+    2.  Fix common issues of memory leaks.
+        Scenarios which can cause memory leaks:
+            -   Unsubscribed event handlers
+            -   Wrong Dependency Injection Lifetimes
+            -   Long lived static references
+            -   Large collection without limits
+            -   Not Disposing IDisposable objects
+    3.  Use IDisposable and IAsyncDisposable correctly.
+    4.  Monitor memory in production
+        -   use dotnet-counters (dotnet-counters monitor --process-id 1234 System.Runtime)
+    5.  Use health checks + alerts.
+        -   Create alerts on :
+            -   increasing memory
+            -   GC pressure
+            -   increasing response time
+            -   OutOfMemoryException
+
+
+
+✅ 🔥 Real Production Memory Leak Scenario (C# + .NET Core)
+Scenario:
+
+A .NET Core API started consuming increasing memory over time.
+GC (Garbage Collector) was running, but memory never went down.
+Eventually, the API crashed with OutOfMemoryException.
+
+❌ Root Cause: Event Handler Not Unsubscribed (Actual Leak Example)
+Problematic Code:
+public class NotificationService
+{
+    private readonly MessagePublisher _publisher;
+
+    public NotificationService(MessagePublisher publisher)
+    {
+        _publisher = publisher;
+        _publisher.OnMessage += HandleMessage;  // SUBSCRIBED
+    }
+
+    private void HandleMessage(string msg)
+    {
+        // process message
+    }
+}
+
+❗ Issue
+
+NotificationService is registered as Transient,
+but MessagePublisher is a Singleton.
+
+So:
+
+Every request creates a new NotificationService
+
+Every instance subscribes to the event
+
+But they are never unsubscribed
+
+Singleton holds references to ALL of them
+
+Garbage Collector cannot free them
+
+Memory grows forever
+
+✔ Fix
+public class NotificationService : IDisposable
+{
+    private readonly MessagePublisher _publisher;
+
+    public NotificationService(MessagePublisher publisher)
+    {
+        _publisher = publisher;
+        _publisher.OnMessage += HandleMessage;
+    }
+
+    public void Dispose()
+    {
+        _publisher.OnMessage -= HandleMessage;  // FIX: unsubscribe
+    }
+}
+
+
+Now, unused NotificationService instances are released.
+
+🚨 How We Detected the Leak
+Step 1 — Used dotnet-counters in production
+dotnet-counters monitor --process-id 4321 System.Runtime
+
+
+We noticed:
+
+Gen2 heap continuously increasing
+
+LOH (Large Object Heap) growing
+
+High allocations/sec
+
+This is a sure sign of a memory leak.
+
+Step 2 — Took a memory dump
+dotnet-gcdump collect -p 4321 -o dump.gcdump
+
+
+Analyzed dump using Visual Studio/dotMemory.
+
+Found:
+
+Thousands of NotificationService instances
+
+All rooted by MessagePublisher.OnMessage
+
+Step 3 — Verified Dependency Injection Lifetimes
+
+Discovered:
+
+services.AddSingleton<MessagePublisher>();
+services.AddTransient<NotificationService>();
+
+
+Mismatch caused the memory leak.
+
+🔥 This is the perfect explanation in an interview
+⭐ Interview-Ready Summary
+
+“In one production incident, our .NET Core API memory usage kept growing. Using dotnet-counters and a gcdump, we found that
+ a Singleton class was holding event handler references from a Transient service.
+Because the event handlers were never unsubscribed, Garbage Collector could not release those objects, creating a memory leak.
+
+We fixed it by implementing IDisposable and unsubscribing the event handler in Dispose().
+After the fix, memory stabilized and Gen2 GC remained stable.”

@@ -1401,13 +1401,10 @@ ValueTask<T>: it is the lightweight version of Task<T>, used for high performanc
 Can you use ref or out without a return type? Yes, 
 Can you return a lambda or delegate from a method? Yes
 
- What is dynamic return type? Dynamic return type refers type checking until runtime. Complie-time checking is skipped so less-safe.
+What is dynamic return type? Dynamic return type refers type checking until runtime. Complie-time checking is skipped so less-safe.
 
 
-Sp vs Function
-
-What are the challenges you faced during pipeline setup.
-
+What are the challenges you faced during pipeline setup?
 “While setting up the CI/CD pipeline for our .NET / Node.js (or any tech stack) project in Azure DevOps (or Jenkins, GitHub Actions, etc.), we encountered several challenges.
 Challenge 1 – Configuration & Secrets Management:
 Initially, each environment had its own hardcoded settings and credentials inside YAML files. This led to security issues and failed deployments when configs were out of sync.
@@ -1433,10 +1430,6 @@ Outcome:
 Overall, I learned the value of designing pipelines as modular, parameterized, and environment-agnostic systems right from the start.”
 
 
-
-
-What are the challenges you faced during migration to .net core.
-What is micro frontend
 
 What is deadlock avoidance?
 Deadlock avoidance is a technique used in operating systems and multithreaded applications to ensure a system never enters a deadlock state.
@@ -1588,8 +1581,18 @@ startupProbe:
 
 
 What is Etype?
-Etype in Active Directory means Encryption type.
-Etype in C# means Enum type which represent a fixed set of named constants.
+    Etype in Active Directory means Encryption type.
+    Etype in C# means Enum type which represent a fixed set of named constants.
+
+Difference between ref, out and in parameters:
+    “ref, out, and in all pass arguments by reference.
+    ref requires the caller to initialize the variable and allows the method to both read and modify it.
+    out is for output-only parameters; the variable doesn’t need to be initialized,
+        but the method is required to assign a value before returning.
+        It’s typically used when returning multiple values, like in TryParse.
+    in is a read-only reference parameter introduced in C# 7.2.
+        It allows the callee to access the value without modifying it and is useful for performance when passing large value types.”
+
 
 
 Minimal Api vs Controller
@@ -1600,6 +1603,6 @@ What is blue green deployment
 Semantic Value Type and Semantic Reference Type
 How do you prevent attackers to write any html in your react form
 What is micro frontend
-
+What are the challenges you faced during migration to .net core.
 
 
