@@ -72,13 +72,13 @@
     Functional Component: 
     -   It is just a normal javascript function that returns a peice of JSX code or ReactElement.
     -   Name of the component has to be in capital.
-    -   Any javascript function with capital name and an arraow function is a component.
+    -   Any javascript function with capital name and an arrow function is a component.
     -   If there is ony one line of JSX element then return is not necessary.
-    -   When rerurn one single ReactElement, curly brackets is used.{}
+    -   When return one single ReactElement, curly brackets is used.{}
     -   eg. const HeadingComponent = () =>{
             return <h1>This is a React Functional Component</h1>
             };
-    -   When we rerurn a div type ReactElement, we use small brackets.
+    -   When we return a div type ReactElement, we use small brackets.
     -   eg. const HeadingComponent = () =>(
             <div id="container">
             <h1 id="heading"> This is a Functional Component returning div type react element.</h1>
@@ -136,10 +136,10 @@ Optional Chaining :
     <RestaurantCard resData = {restCardsList[3]}/> 
     This is not a good practice to create component one by one and map the restraurants with its index value.
     Instead we wil create components based on list count and map dynamically by using list.map(component) javascript function below.
-    Always provide a key when looping through a lit.
+    Always provide a key when looping through a list.
     -   eg. {topRatedRestaurantList.map(restaurant=>(<RestaurantCard key={restaurant.info.id} resData={restaurant}/>))}; 
 
-    not using keys (not acceptable) <<< usning index as key <<< unique id as key (best practice)
+    not using keys (not acceptable) <<< using index as key <<< unique id as key (best practice)
 
 
 
@@ -172,7 +172,7 @@ React Hooks:
                     setTopRatedRestaurantList(filteredList);
                 }}>4+ Rated Restaurants</button>
         -   Whenever a state variable updates, react re-renders the component.
-        -   State variable is meant ot be created inside a functional component at the higher level.
+        -   State variable is meant to be created inside a functional component at the higher level.
             eg. never create a state variable outside of the functional component.
                 never create a state variable inside a conditional statement. i.e. if else.
                 never create a state variable inside a loop.
@@ -472,7 +472,7 @@ Dynamic Bundling/ Code Splitting/ Chuncking/ Lazy Loading/ On demand loading/ Dy
             import React,{lazy,Suspense} from "react";
     -   As react is very fast, it give error before the js bundle is loaded to the browser,
         we use Suspense component provided by react to avoid the error.
-    -   We an provide fallback inside Sunspense , as what to show until our js file is loaded to the browser.
+    -   We can provide fallback inside Sunspense , as what to show until our js file is loaded to the browser.
         eg. {
                 path:"/grocery",
                 element:(<Suspense fallback={<h1>Loading...</h1>}><Grocery /></Suspense>)
@@ -495,26 +495,51 @@ Higher Order Components:
     -   here RestaurantCard is a component and in props we are passing the same data as original RestaurantCard component.
 
 Controlled & Uncontrolled Component :
+Controlled Component
 
-    UnControlled Component :
-        -   Component which manages its own state and does not depend on another component.
-        -   Here accordion header has its own state of show items with onclick event.
-            showItems is state variable which is changing on click of accordion header.
-            State variable is in the same component.
-            eg. const [showItems,setShowItems] = useState(false);
-            
-                {/** Accordion Header */}
-                <div className="flex justify-between cursor-pointer" onClick={handleClick}>
-                    <span className="font-bold text-lg">{data?.title} ({data.itemCards.length})</span>
-                    <span>⬇️</span>
-                </div>
-                {/** Accordion Body */}
-                { showItems && <ItemList items={data.itemCards}/>}
+    A controlled component is a form input whose value is managed by React state.
+    React controls the input value
+    Uses value + onChange
+    Single source of truth = React state
+    Easier validation and conditional logic
+    Predictable and testable
 
-    
-    Controlled Component :
-        -   Where the behaviour of one component is controlled by another component or by parent component.
-        -   This is also a exapmle of Lifting the state up.
+    Example:
+    function Controlled() {
+    const [text, setText] = useState("");
+
+    return (
+        <input
+        value={text}
+        onChange={e => setText(e.target.value)}
+        />
+    );
+    }
+
+❌ Uncontrolled Component
+
+    An uncontrolled component stores its own value inside the DOM instead of React state.
+    DOM controls the input value
+    React uses a ref to read the value
+    No onChange required
+    Less code for simple forms
+    Harder to validate or manage
+
+    Example:
+    function Uncontrolled() {
+    const inputRef = useRef();
+
+    const handleSubmit = () => {
+        console.log(inputRef.current.value);
+    };
+
+    return (
+        <>
+        <input ref={inputRef} />
+        <button onClick={handleSubmit}>Submit</button>
+        </>
+    );
+    }
         
 Lifting the State Up :
     -   Child component updates the state variable of parent component.
