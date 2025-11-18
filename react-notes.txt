@@ -837,11 +837,23 @@ React Life Cycle Methods :
         -   componentWillMount(prevProps,prevState,snapshot) -- perform action based on the updated props , state.
     -   Component UnMounting :
         -   componentWillUnmount();
-        -   happens before the component is unmpunted or destroyed.
+        -   happens before the component is unmounted or destroyed.
         -   normally used for clearing timers, or cancelling the newwork calls.
     -   Error Handling :
         -   static getDerivedStateFromError(error)-- used for error boundries.
         -   componentDidCatch(error,info) -- allows you to log an error or perform any action.
+
+
+
+        | Class Lifecycle Method     | Functional Component Equivalent                     |
+| -------------------------- | --------------------------------------------------- |
+| `componentDidMount`        | `useEffect(() => {}, [])`                           |
+| `componentDidUpdate`       | `useEffect(() => {}, [dependencies])`               |
+| `componentWillUnmount`     | `useEffect(() => return cleanupFn, [])`             |
+| `shouldComponentUpdate`    | `React.memo()` + custom comparison                  |
+| `getDerivedStateFromProps` | Derive values inside render or useEffect            |
+| `componentDidCatch`        | `Error Boundary` (must still be a class or wrapper) |
+
 
     Order:
     Constructor -> render -> componentDidMount (Mounting phase)
