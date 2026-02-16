@@ -1,0 +1,117 @@
+is entity framework a orm
+
+Yes ✅ — Entity Framework (EF) is an ORM.
+
+🔵 What is ORM?
+
+ORM = Object-Relational Mapping
+
+It is a technique that:
+
+Maps database tables ↔ C# classes
+
+Maps rows ↔ objects
+
+Maps columns ↔ properties
+
+Instead of writing SQL like this:
+
+SELECT * FROM Users WHERE Id = 1
+
+
+You write C#:
+
+var user = context.Users.FirstOrDefault(u => u.Id == 1);
+
+🔵 Entity Framework = Microsoft ORM for .NET
+
+Entity Framework (especially Entity Framework Core) is:
+
+Developed by Microsoft
+
+Used in .NET applications
+
+Converts LINQ queries into SQL
+
+Tracks changes automatically
+
+Handles CRUD operations
+
+🔥 Example
+Database Table
+Users
+------
+Id
+Name
+Email
+
+C# Model
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+DbContext
+public class AppDbContext : DbContext
+{
+    public DbSet<User> Users { get; set; }
+}
+
+Query
+var users = context.Users.ToList();
+
+
+👉 EF converts this to SQL internally.
+
+🔵 Types of Entity Framework
+
+Entity Framework (EF6) – older
+
+Entity Framework Core (EF Core) – modern, cross-platform
+
+Most microservices use:
+👉 EF Core
+
+🔥 Why EF is an ORM
+
+Because it:
+
+Maps objects ↔ relational database
+
+Handles relationships (One-to-Many, Many-to-Many)
+
+Manages database schema (Migrations)
+
+Tracks object state (Added, Modified, Deleted)
+
+🔵 Advantages
+
+Less SQL writing
+
+Faster development
+
+Database abstraction
+
+Change tracking
+
+LINQ support
+
+🔴 Limitations
+
+Performance overhead in complex queries
+
+Sometimes raw SQL is faster
+
+Needs optimization for large-scale systems
+
+🎯 Interview-Ready Answer
+
+If asked:
+
+Is Entity Framework an ORM?
+
+You can say:
+
+Yes, Entity Framework is Microsoft’s ORM framework for .NET that maps C# classes to database tables and translates LINQ queries into SQL.
